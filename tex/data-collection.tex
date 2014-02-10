@@ -1,0 +1,79 @@
+\section{Data Collection}
+
+This research leverages supervised learning algorithms, meaning it requires a training set and a test set to develop an appropriate feature set to use in conjunction with the supervised learning algorithm.
+The training set allows the algorithm to “learn” how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
+Unlike most implementations of supervised learning algorithms, the test and training set data come from different sources.
+Wikipedia is used for the training set, and a PDF textbook is used for test data.
+The following sections contain justification for the choice of data to used for each set, and the methods used to structure and collect that data for analysis.
+
+\subsection{Test Set}
+
+Since the goal of this research is to create an index for a book, the test set is generated from a textbook with a comprehensive index section.
+This textbook is called {\it Biology} \cite{biology}, and is freely available from OpenStax \cite{openstax-bio} under the Creative Commons Attribution license.
+The book was created by six senior contributors that hold professorial positions at prevalent universities, and approximates an average college textbook.
+This textbook is 1477 pages long, containing an index of 3118 unique topics (labels) making for 4678 different index entries (references).
+
+In {\it Biology}, all words referred to by index entries are bolded in the text itself. Below is an example of what this looks like (bold in original):
+
+\begin{quote}
+Symbiotic relationships, or symbioses (plural), are close interactions between individuals of different species over an extended period of time which impact the abundance and distribution of the associating populations. \cite{biology}
+\end{quote}
+
+\noindent Here, the bold word “symbioses” is referred to by an index entry at the back of the book with the same name. All index entries point to bold words, and all bold words point to index entries. This fact makes it trivial to find which part of the page an index reference is referring to, making it a good candidate for test data.
+
+\subsubsection{Structuring the Test Data}
+
+Useful though {\it Biology} is as a data source, it is not available in a structured, easily parsable format.
+In order to make the data in {\it Biology} useful, it needs to be converted from it source PDF into a structured form.
+To do this, a relational database is used to store the book’s text alongside meta data like page number and paragraph location.
+
+\subsubsubsection{Index Entries}
+
+To expedite the structuring process, text was copied manually from the PDF, and pasted into a plain text document.
+Regular expressions were used to massage the data into a simple, comma separated format.
+In this format, each line represents a unique index entry, with the first column in a line holding the index label (or name), and each subsequent column holds a page number the label can be found on.
+Now that the data are more easily parsable, there must be a way to it in a relational database for analysis purposes.
+
+It is important to create a table to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
+In this table, indexId is an autoincrementing ID, label is the name of the index entry as it appears in the book (e.g., “Acid rain”), and wikiLabel is the label if the label were a wikipedia article name (e.g., “Acid\_rain”) which is achieved by replacing spaces in the label with underscores.
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+\textbf{index} \\ 
+\hline 
+bookId \\ 
+\hline 
+indexId \\ 
+\hline 
+label \\ 
+\hline 
+wikiLabel \\ 
+\hline 
+\end{tabular}
+\end{center}
+ 
+An indexedPage table must exist to store index references (page numbers) that belong to index labels.
+This table simply contains an indexId and a pageNum, which allows for joins onto the index table to replicate the whole index.
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+\textbf{indexedPage} \\ 
+\hline 
+indexId \\ 
+\hline 
+pageNum \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
+Once these tables are created, the structured CSV file can be imported using the custom indexImporter.php (see Appendix A) tool written specifically for this purpose.
+
+The importer script populates all of the columns in both tables with all of the data in the CSV file.
+
+\subsubsubsection{Triaging Index Entries}
+
+Since data from {\it Biology} text is gathered by hand (since PDFs are difficult to parse), the index labels in {\it Biology} that are also verbatim article titles in Wikipedia must be located.
+To do this, a table must be created to hold a database dump of Wikipedia titles which must be imported into the relational database so they can be intersected with the index table.
+
