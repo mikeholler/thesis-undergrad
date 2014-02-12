@@ -1,7 +1,7 @@
 \section{Data Collection}
 
 This research leverages supervised learning algorithms, meaning it requires a training set and a test set to develop an appropriate feature set to use in conjunction with the supervised learning algorithm.
-The training set allows the algorithm to “learn” how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
+The training set allows the algorithm to “learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
 Unlike most implementations of supervised learning algorithms, the test and training set data come from different sources.
 Wikipedia is used for the training set, and a PDF textbook is used for test data.
 The following sections contain justification for the choice of data to used for each set, and the methods used to structure and collect that data for analysis.
@@ -19,7 +19,7 @@ In {\it Biology}, all words referred to by index entries are bolded in the text 
 Symbiotic relationships, or symbioses (plural), are close interactions between individuals of different species over an extended period of time which impact the abundance and distribution of the associating populations. \cite{biology}
 \end{quote}
 
-\noindent Here, the bold word “symbioses” is referred to by an index entry at the back of the book with the same name. All index entries point to bold words, and all bold words point to index entries. This fact makes it trivial to find which part of the page an index reference is referring to, making it a good candidate for test data.
+\noindent Here, the bold word ``symbioses'' is referred to by an index entry at the back of the book with the same name. All index entries point to bold words, and all bold words point to index entries. This fact makes it trivial to find which part of the page an index reference is referring to, making it a good candidate for test data.
 
 \subsubsection{Structuring the Test Data}
 
@@ -35,7 +35,7 @@ In this format, each line represents a unique index entry, with the first column
 Now that the data are more easily parsable, there must be a way to it in a relational database for analysis purposes.
 
 It is important to create a table to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
-In this table, indexId is an autoincrementing ID, label is the name of the index entry as it appears in the book (e.g., “Acid rain”), and wikiLabel is the label if the label were a wikipedia article name (e.g., “Acid\_rain”) which is achieved by replacing spaces in the label with underscores.
+In this table, indexId is an autoincrementing ID, label is the name of the index entry as it appears in the book (e.g., ``Acid rain''), and wikiLabel is the label if the label were a wikipedia article name (e.g., ``Acid\_rain'') which is achieved by replacing spaces in the label with underscores.
 
 \begin{center}
 \begin{tabular}{|c|}
@@ -68,18 +68,19 @@ pageNum \\
 \end{tabular} 
 \end{center}
 
-Once these tables are created, the structured CSV file can be imported using the custom indexImporter.php (see Appendix A) tool written specifically for this purpose.
+Once these tables are created, the structured CSV file can be imported using the custom indexImporter.php (see Appendix B) tool written specifically for this purpose.
 
 The importer script populates all of the columns in both tables with all of the data in the CSV file.
 
 \subsubsubsection{Reducing Index Entries}
 
-Only index entries whose \textt{wikiLabel} value matches a Wikipedia page will be used in the analysis portion of this research.
+Only index entries whose {\tt wikiLabel} value matches a Wikipedia page will be used in the analysis portion of this research.
 This means that information need only be gathered from index entries that match this criteria.
-To discover this subset of index entries, a database of Wikipedia titles must be intersected with the \textt{index}.
+To discover this subset of index entries, a database of Wikipedia titles must be intersected with the {\tt index}.
 
 The Wikimedia Foundation periodically creates dumps for their many databases and makes them publically available online\cite{wiki-dumps}.
 One of the many data sets they make available is a list of Wikipedia article titles in the main \url{/wiki/} namespace for the English language version of Wikipedia\cite{wiki-dump-titles}.
+At the time of this writing, there are 10639771 separate Wikipedia article titles matching this criteria.
 This dump will serve as the source that will ultimately be intersected with the {\it Biology} index entries to yield the entries that will be used in analyses.
 
 Before performing this intersection, the English Wikipedia title information must be extracted from the dump file and placed in a table in the relational database.
@@ -96,3 +97,15 @@ title \\
 \hline 
 \end{tabular} 
 \end{center}
+
+This data is imported into the {\tt articleTitles} table using the {\tt titleImporter.php} script (see Appendix C).
+Now that both the index labels and article titles exist in the relational database, the two datasets can be intersected by running the following MySQL command, where {\tt BINARY} requires case sensitive matching:
+
+\begin{lstlisting}[language=SQL]
+SELECT i.wikiLabel
+    FROM `index` i, `articleTitles` at
+    WHERE BINARY i.wikiLabel = at.title;
+\end{lstlisting}
+
+The 3118 unique index labels intersected against all 10639771 Wikipedia articles yields a total number of 518 overlapping terms.
+% TODO: Explain why this is so small (represents only entries that start with a capital letter, etc.)

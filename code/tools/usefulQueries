@@ -1,0 +1,29 @@
+-- Get all index pointers.
+/*
+SELECT *
+    FROM thesis.`index` i,
+         thesis.indexToWiki iw,
+         thesis.indexedPage ip
+    WHERE BINARY i.`label` = iw.indexTitle
+        AND ip.indexId = i.indexId;
+*/
+
+-- Get pages that have index entries.
+SELECT DISTINCT ip.pageNum, i.`label`
+    FROM thesis.`index` i,
+         thesis.indexToWiki iw,
+         thesis.indexedPage ip
+    WHERE BINARY i.`label` = iw.indexTitle
+        AND ip.indexId = i.indexId
+        ORDER BY ip.pageNum;
+
+-- Get pages that have index entries.
+/*
+SELECT count(*) FROM 
+    (SELECT DISTINCT ip.pageNum
+        FROM thesis.`index` i,
+             thesis.indexToWiki iw,
+             thesis.indexedPage ip
+        WHERE BINARY i.`label` = iw.indexTitle
+            AND ip.indexId = i.indexId) t;
+*/

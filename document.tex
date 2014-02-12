@@ -1,10 +1,15 @@
 \documentclass[10pt,letterpaper]{article}
-\usepackage[utf8]{inputenc}
+%\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{url}
+\usepackage{listings}
+\usepackage{appendix}
+\usepackage{courier}
+\usepackage{multicol}
 %-------------------------------------------------
 % From http://tex.stackexchange.com/a/60212/31317
 \usepackage{titlesec}
@@ -45,12 +50,14 @@
 \title{Automated Back-of-the-Book Indexing}
 \begin{document}
 \maketitle
-\input{tex/abstract}
-\input{tex/lit-review}
-\input{tex/introduction}
-\input{tex/data-collection}
-\input{tex/analysis}
-\input{tex/conclusion}
-\input{tex/bibliography}
-\input{tex/appendix-A}
+\newpage \tableofcontents
+\input{tex/05-styles}
+\input{tex/10-abstract}
+\input{tex/15-lit-review}
+\input{tex/20-introduction}
+\input{tex/25-data-collection}
+\input{tex/30-analysis}
+\input{tex/35-conclusion}
+\input{tex/40-bibliography}
+\input{tex/45-appendices}
 \end{document}

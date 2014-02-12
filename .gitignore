@@ -1,5 +1,1 @@
-*.aux
-*.log
-*.out
-*.pdf
-*.synctex.gz
+/build/
