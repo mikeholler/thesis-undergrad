@@ -1,7 +1,7 @@
 \section{Data Collection}
 
 This research leverages supervised learning algorithms, meaning it requires a training set and a test set to develop an appropriate feature set to use in conjunction with the supervised learning algorithm.
-The training set allows the algorithm to “learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
+The training set allows the algorithm to ``learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
 Unlike most implementations of supervised learning algorithms, the test and training set data come from different sources.
 Wikipedia is used for the training set, and a PDF textbook is used for test data.
 The following sections contain justification for the choice of data to used for each set, and the methods used to structure and collect that data for analysis.
@@ -25,9 +25,9 @@ Symbiotic relationships, or symbioses (plural), are close interactions between i
 
 Useful though {\it Biology} is as a data source, it is not available in a structured, easily parsable format.
 In order to make the data in {\it Biology} useful, it needs to be converted from it source PDF into a structured form.
-To do this, a relational database is used to store the book’s text alongside meta data like page number and paragraph location.
+To do this, a relational database is used to store the book's text alongside meta data like page number and paragraph location.
 
-\subsubsubsection{Index Entries}
+\subsubsection{Importing Index Entries into Relational Database}
 
 To expedite the structuring process, text was copied manually from the PDF, and pasted into a plain text document.
 Regular expressions were used to massage the data into a simple, comma separated format.
@@ -72,7 +72,8 @@ Once these tables are created, the structured CSV file can be imported using the
 
 The importer script populates all of the columns in both tables with all of the data in the CSV file.
 
-\subsubsubsection{Reducing Index Entries}
+\subsubsection{Reducing Index Entry Set}
+\label{subsec:reducing}
 
 Only index entries whose {\tt wikiLabel} value matches a Wikipedia page will be used in the analysis portion of this research.
 This means that information need only be gathered from index entries that match this criteria.
@@ -108,4 +109,123 @@ SELECT i.wikiLabel
 \end{lstlisting}
 
 The 3118 unique index labels intersected against all 10639771 Wikipedia articles yields a total number of 518 overlapping terms.
-% TODO: Explain why this is so small (represents only entries that start with a capital letter, etc.)
+This number would be larger, however all Wikipedia titles begin with a capital letter, and since this was a {\tt BINARY} exact case match all index lables with lowercase initial letters were excluded from the intersection.
+This does not seem to introduce a bias towards proper nouns, however, as {\it Biology}'s index contains words and phrases exactly as they appear in the text.
+Below is a random sampling of 15 labels from the intersection as they appear in {\it Biology}'s index.
+Notice how very few of these labels are proper nouns.
+
+\begin{multicols}{3}
+\begin{verbatim}
+Bacteriophages
+Chordata
+Elevation
+Exotic species
+FtsZ
+Heritability
+Phloem
+Pongo
+RNAs
+Runners
+Schwann cell
+S-layer
+Southern blotting
+Sutural bones
+Topoisomerase
+\end{verbatim}
+\end{multicols}
+
+\subsubsection{Storing the Indexed Text}
+
+Now that the relevant set of index labels have been ascertained, the context in which these labels appear in {\it Biology}'s text must be stored.
+As mentioned above, this research defines an index entry's context as the paragraph the indexed word appears in.
+In the relational database, two tables exist to hold this information:
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+\textbf{paragraph} \\ 
+\hline 
+paraNum \\ 
+\hline 
+bookId \\ 
+\hline 
+pageNum \\ 
+\hline 
+endPageNum \\ 
+\hline 
+body \\ 
+\hline 
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+\textbf{indexedParagraph} \\ 
+\hline 
+indexId \\ 
+\hline 
+paraNum \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
+The contents of a paragraph are stored in the {\tt paragraph} table's body, along with information about the paragraph's location.
+{\tt pageNum} and {\tt endPageNum} specify the pages on which the paragraph starts and ends, since a paragraph may continue onto another page.
+
+To associate these paragraphs with the index labels in the {\tt index} table, the {\tt indexedParagraph} table was creted.
+This lookup table specifies a many to many relationship between {\tt paragraph} and {\tt index}, since an index entry refers to at least one paragraph, and a paragraph may contain zero or more index references. Once these tables are created, it's time to create the indexed
+
+\subsubsection{Collecting the Indexed Text}
+
+The paragraphs were imported into the relational database using {\tt paragraphImporter.php}, a small webpage script written specifically for this purpose, allowing a researcher to copy a paragraph into a textbox on that page and fill in the meta data for that paragraph and keep track of the index entries that point to it.
+
+As mentioned above, {\it Biology} comes in PDF form, making it difficult for a computer to parse the individual paragraphs out.
+By using the SQL query below, a list of index entries with the pages on which they appear.
+
+\begin{lstlisting}
+SELECT DISTINCT ip.pageNum, i.`label`
+    FROM thesis.`index` i,
+         thesis.indexToWiki iw,
+         thesis.indexedPage ip
+    WHERE BINARY i.`label` = iw.indexTitle
+        AND ip.indexId = i.indexId
+        ORDER BY ip.pageNum ASC;
+\end{lstlisting}
+
+This list is used to guide data entry, since it contains only the index references which are relevant for this research.
+Here is an example of what this list looks like:
+
+\begin{multicols}{2}
+\begin{verbatim}
+14,Science
+16,"Deductive reasoning"
+16,"Inductive reasoning"
+20,"Basic science"
+23,"Review articles"
+27,Organs
+27,Prokaryotes
+28,Organisms
+32,Microbiology
+33,Zoology
+\end{verbatim}
+\end{multicols}
+
+Using this list and a PDF viewer, a paragraph is located that corresponds to each line, the text is selected using the cursor, and copied from the PDF to {\tt paragraphImporter.php}.
+Finding which paragraph on a page corresponds to a given index label is a trivial task, as the label always appears bolded in the paragraph it belongs to.
+
+\subsection{Training Set}
+
+The training set is created from a list of Wikipedia articles determined by the intersection of Wikipedia article titles and index labels in section~\ref{subsec:reducing}.
+Since this list contains only titles, the contents of the article need to be fetched from Wikipedia itself.
+
+\subsubsection{Retrieving the Data}
+
+There are 518 articles, so getting each one by one from Wikipedia would take time and go against Wikipedia's terms of service, which does not allow automated crawlers where use of one can be avoided.
+
+Instead, the articles are fetched using the Wikipedia page exporter \cite{wiki-exporter}, which produces an XML database dump file containing information about the articles and their contents in the MediaWiki markup language \cite{mediawiki-markup}.
+While MediaWiki is great for writing, it is difficult to parse out paragraphs.
+To solve this problem, the MediaWiki format must be converted to HTML, which has the useful {\tt <p>} tag delimiting paragraphs.
+Unfortunately, the only full featured MediaWiki to HTML converter is part of the MediaWiki platform itself.
+
+To work around this solution, a local MediaWiki server is installed using the instructions online, making sure to enable all available first-party plugins (Wikipedia uses them) \cite{mediawiki-installation}. Once installed, the database import tool \cite{mediawiki-import} is used to import the XML file from Wikipedia's database dump tool into the local MediaWiki installation, creating a small version of Wikipedia containing only the articles needed for this research.
