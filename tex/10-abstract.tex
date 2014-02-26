@@ -1,8 +1,10 @@
 \newpage
 \begin{abstract}
-Creating the index for a book can be one of two things for an author: arduous, or expensive.
+Creating the index for a book is either arduous or expensive for an author.
 If an automated process can be introduced which effectively generates an index with approximately the same accurracy as a human, it would reduce the time and money authors need to spend on their work, allowing them to allocate those resources in a more useful way.
 This preliminary research looks to establish the efficiacy of using a Na{\"i}ve Bayes' classifier trained with data extracted from Wikipedia articles to create an index for a Biology textbook.
-The preliminary results suggest that this study's approach is not effective in creating an accurate and effective index.
-However the research and results can be used to inform and refine future attempts to automate the indexing process.
+The Wikipedia article titles are used to label each class of training data, making the assumption that the subset of all possible index entries is contained in the set of all possible Wikipedia titles, an assumption which grows more accurate by the minute as new articles are created.
+% It would be a fun statistic to know how many English Wikipedia articles there are
+% and how many are added each day.
+Paragraph-level data from Wikipedia and {\it Biology} are processed for features such as word existence, first word of paragraph, word in first sentence, and a number of other binary traits.
 \end{abstract}
