@@ -10,6 +10,16 @@
 \usepackage{appendix}
 \usepackage{courier}
 \usepackage{multicol}
+\usepackage[htt]{hyphenat}
+\usepackage{epigraph}
+\usepackage{marginnote}
+\usepackage{float}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{tikz}
+\usepackage{draftwatermark}
+\SetWatermarkColor[rgb]{1,0.85,0.85}
+\SetWatermarkScale{2.5}
 %-------------------------------------------------
 % From http://tex.stackexchange.com/a/60212/31317
 \usepackage{titlesec}
@@ -50,12 +60,13 @@
 \title{Automated Back-of-the-Book Indexing}
 \begin{document}
 \maketitle
-\newpage \tableofcontents
+\newpage
+%\epigraph{You want weapons? We're in a library! Books! The best weapons in the world! This room's the greatest arsenal we could have---arm yourselves!}{---The Doctor}\tableofcontents
 \input{tex/05-styles}
 \input{tex/10-abstract}
 % Where to put why I decided to use paragraphs for context instead of pages?
-\input{tex/15-lit-review}
-\input{tex/20-introduction}
+\input{tex/15-introduction}
+\input{tex/20-background}
 \input{tex/25-data-collection}
 \input{tex/30-analysis}
 \input{tex/35-conclusion}

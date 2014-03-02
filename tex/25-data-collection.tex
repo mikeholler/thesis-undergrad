@@ -178,7 +178,7 @@ This lookup table specifies a many to many relationship between {\tt paragraph} 
 
 \subsubsection{Collecting the Indexed Text}
 
-The paragraphs were imported into the relational database using {\tt paragraphImporter.php}, a small webpage script written specifically for this purpose, allowing a researcher to copy a paragraph into a textbox on that page and fill in the meta data for that paragraph and keep track of the index entries that point to it.
+The paragraphs were imported into the relational database using paragraphImporter.php, a small webpage script written specifically for this purpose, allowing a researcher to copy a paragraph into a textbox on that page and fill in the meta data for that paragraph and keep track of the index entries that point to it.
 
 As mentioned above, {\it Biology} comes in PDF form, making it difficult for a computer to parse the individual paragraphs out.
 By using the SQL query below, a list of index entries with the pages on which they appear.
@@ -211,21 +211,119 @@ Here is an example of what this list looks like:
 \end{verbatim}
 \end{multicols}
 
-Using this list and a PDF viewer, a paragraph is located that corresponds to each line, the text is selected using the cursor, and copied from the PDF to {\tt paragraphImporter.php}.
+Using this list and a PDF viewer, a paragraph is located that corresponds to each line, the text is selected using the cursor, and copied from the PDF to paragraphImporter.php.
 Finding which paragraph on a page corresponds to a given index label is a trivial task, as the label always appears bolded in the paragraph it belongs to.
+
+\subsubsection{Relational Database to Files}
+\label{subsubsec:RDB2F}
+
+This research uses Python's Natural Language Toolkit (NLTK) library for analysis \cite{nltk}.
+With NLTK, it is easier to work with raw files without interacting with a database.
+In order to do this, the content that was inserted into the database in the above step needs to be extracted.
+The extraction is acomplished using saveIndexParagraphs.php, a script which connects to the database and places paragraphs in files named by their respective index labels.
+All of the paragraphs a label refers to are appended to the same file, using two newline characters ({\tt \\n\\n}) as a delimiter between paragraphs.
+It is also important to note that a paragraph will be placed in multiple files if multiple labels refer to it.
+Now the test set is considered processed, it is time to move on to the training set.
 
 \subsection{Training Set}
 
 The training set is created from a list of Wikipedia articles determined by the intersection of Wikipedia article titles and index labels in section~\ref{subsec:reducing}.
 Since this list contains only titles, the contents of the article need to be fetched from Wikipedia itself.
 
-\subsubsection{Retrieving the Data}
+\subsubsection{Downloading the Training Data}
 
-There are 518 articles, so getting each one by one from Wikipedia would take time and go against Wikipedia's terms of service, which does not allow automated crawlers where use of one can be avoided.
+Since there are 518 articles to fetch from Wikipedia, downloading each one by one would take time and go atainst Wikipedia's terms of service. Wikipedia does not allow the use of automated web crawlers when it can be avoided.
 
 Instead, the articles are fetched using the Wikipedia page exporter \cite{wiki-exporter}, which produces an XML database dump file containing information about the articles and their contents in the MediaWiki markup language \cite{mediawiki-markup}.
 While MediaWiki is great for writing, it is difficult to parse out paragraphs.
 To solve this problem, the MediaWiki format must be converted to HTML, which has the useful {\tt <p>} tag delimiting paragraphs.
 Unfortunately, the only full featured MediaWiki to HTML converter is part of the MediaWiki platform itself.
 
-To work around this solution, a local MediaWiki server is installed using the instructions online, making sure to enable all available first-party plugins (Wikipedia uses them) \cite{mediawiki-installation}. Once installed, the database import tool \cite{mediawiki-import} is used to import the XML file from Wikipedia's database dump tool into the local MediaWiki installation, creating a small version of Wikipedia containing only the articles needed for this research.
+\subsubsection{Converting MediaWiki Markup to HTML}
+
+To work around this problem, a local MediaWiki server is installed using the online instructions \cite{mediawiki-installation}.
+All available first-party MediaWiki plugins were enabled in the installation, as Wikipedia uses many of them on their own MediaWiki installation.
+Once installed, the database import tool \cite{mediawiki-import} is used to import the XML file from Wikipedia's database dump into the local MediaWiki installation, creating a small version of Wikipedia containing only the articles needed for this research.
+The MediaWiki platform takes care of converting MediaWiki markup into HTML when it receives an HTTP request for a given article, just like with regular Wikipedia.
+
+\subsubsection{Finding Redirects}
+
+Inspection of the articles imported into the local MediaWiki installation showed that a large number of the articles are actually just redirect pages to a complete article with a different name.
+The Wikipedia exporter does not provide full pages the redirect pages reference.
+There is, however, a way to obtain a list of the full-text files.
+Here is an example of what a redirect page looks like in the XML database dump:
+
+\begin{lstlisting}
+<page>
+  <title>5' cap</title>
+  <ns>0</ns>
+  <id>37542765</id>
+  <redirect title="Five prime cap" />
+  <revision>
+    <id>528722171</id>
+    <parentid>521385832</parentid>
+    <timestamp>2012-12-19T00:45:42Z</timestamp>
+    <contributor>
+      <username>MZMcBride</username>
+      <id>212624</id>
+    </contributor>
+    <minor/>
+    <comment>[[bugzilla:42616]]</comment>
+    <text xml:space="preserve" bytes="28">
+        #REDIRECT [[Five prime cap]]
+    </text>
+    <sha1>kzecsgfge2ind0a0652k24ldw1unbgd</sha1>
+    <model>wikitext</model>
+    <format>text/x-wiki</format>
+  </revision>
+</page>
+\end{lstlisting}
+
+Line 5 in the above sample shows a redirect tag that contains the title of the complete article this page redirects to.
+These redirect tags were discovered by using findRedirects.py.
+This script does two things.
+First, it changes the {\tt wikiTitle} field in the {\tt indexToWiki} table from the title of the redirect page (``$5\prime$ cap'' in the above example) to the title of the page it redirects to (``Five prime cap``).
+Second, it prints out the wikified title (``Five prime cap'' becomes ``Five\_prime\_cap``) on each line of output.
+The results of the program's output is then copy-pasted back into the Wikipedia exporter \cite{wiki-exporter}, yielding a new XML database dump full of the complete articles.
+This XML file is then imported into the MediaWiki site, giving the redirect pages their respective targets to point to.
+
+The process of resolving redirects did not need to be done on the second XML database dump because it only contained full articles (no redirects to other pages).
+
+\subsubsection{Saving Pages as HTML}
+
+Since all necessary articles have been imported into the local MediaWiki server, it is now possible to download them all in HTML.
+To do this, a list of links to each of the articles imported into the MediaWiki server is required.
+MediaWiki provides this list via the {\tt Special:AllPages} family of pages.
+printPageLinks.py is used to locate all of the links on these special pages and download all non-redirect articles in HTML.
+The Python script saves each article in a file with the same title as the article itself.
+
+\subsubsection{Extracting Paragraphs from Article HTML}
+
+Now that the articles are in HTML, the paragraphs need to be extracted from them and stored in the same format as the {\it Biology} paragraphs from section~\ref{subsubsec:RDB2F}.
+Another Python tool---html2text.py---uses BeautifulSoup \cite{beautifulsoup} to extract the contents of all {\tt <p>} tags from the body of each HTML Wikipedia article.
+The script appends each paragraph to a file (one file per article) with each paragraph in the file separated by two newline characters as in section~\ref{subsubsec:RDB2F}.
+
+\subsubsection{Dealing with Disambiguation Pages}
+
+Redirect pages aren't articles in and of themselves, so they were removed from the training set.
+However, there is also another type of article whose content does not accurately represent a specific concept, and those are disambiguation pages.
+
+\begin{quote}
+Disambiguation in Wikipedia is the process of resolving the conflicts that arise when a single term is ambiguous---when it refers to more than one topic covered by Wikipedia. \cite{wiki-disambiguation}
+\end{quote}
+
+A disambiguation page differs in content from a redirect page in two primary ways: disambiguation pages do not follow a specific structure and always link to more than one page.
+Since the subjects of disambiguation pages are, by nature, multi-topic, they should not be used for this research.
+
+Disambiguation pages are difficult to locate and remove because they do not follow a specific structure, although they are fairly obvious to the human eye.
+Thus, disambiguation pages were removed with the help of cullDisambiguation.sh, a script which displays an article to the user and asks them whether it should be kept or deleted.
+
+Although there was not a deterministic process guiding script, articles were only deleted if they contained sentences in the article ``abstract'' following the patterns, ``X commonly refers to,'' ``Y may also refer to'' or similar. Articles are also considered to be disambiguation pages if they contained unordered lists of links to similarly named articles.
+
+\subsubsection{Removing Spurious Article Text}
+
+Several of the plain text paragraph files contain spurious ``paragraphs'' at the end of the file which are either ``Cite error''s or links to view the article in a different language.
+Neither of these traits are relevant to the article, so they can be safely removed.
+Unlike disambiguation pages, locating and removing these errors followed a deterministic, repeatable process.
+The offending pages are located using the pattern matching script cullSpuriousArticleText.sh hand the offending lines were removed by hand.
+Manually deleting the spurious lines prevented false positive matches from being removed from the articles, since this text could conceivably (however unlikely) appear in-context within the text of an article.
