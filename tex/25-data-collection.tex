@@ -221,7 +221,7 @@ This research uses Python's Natural Language Toolkit (NLTK) library for analysis
 With NLTK, it is easier to work with raw files without interacting with a database.
 In order to do this, the content that was inserted into the database in the above step needs to be extracted.
 The extraction is acomplished using saveIndexParagraphs.php, a script which connects to the database and places paragraphs in files named by their respective index labels.
-All of the paragraphs a label refers to are appended to the same file, using two newline characters ({\tt \\n\\n}) as a delimiter between paragraphs.
+All of the paragraphs a label refers to are appended to the same file, using two newline characters ({\tt{\textbackslash}n{\textbackslash}n}) as a delimiter between paragraphs.
 It is also important to note that a paragraph will be placed in multiple files if multiple labels refer to it.
 Now the test set is considered processed, it is time to move on to the training set.
 

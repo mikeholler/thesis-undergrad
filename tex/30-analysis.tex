@@ -1,0 +1,101 @@
+\section{Analysis}
+
+% Results including Number of Samples.
+% Please remember to add \use{multirow} to your document preamble in order to suppor multirow cells
+%\begin{table}[h]
+%\begin{tabular}{cllll}
+%\hline
+%\multicolumn{1}{l}{\textbf{\begin{tabular}[c]{@{}c@{}}Number of \\ Samples\end{tabular}}} & \textbf{Sensitivity}               & \textbf{Feature}                        & \textbf{Sampling Technique} & \textbf{Accuracy} \\ \hline
+%\multirow{24}{*}{2000}                                                                    & \multirow{12}{*}{Case-sensitive}   & \multirow{3}{*}{Contains}               & Least frequent              & 0.20\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 0.13\%   \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.20\%    \\ \cline{3-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{In first sentence}      & Least frequent              & 0.20\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 1.82\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.20\%    \\ \cline{3-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{First word in sentence} & Least frequent              & 0.20\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 0.61\%   \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \cline{3-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{Linked article titles}  & Least frequent              & 0.20\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 1.21\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \cline{2-5} 
+%\multicolumn{1}{l}{}                                                                      & \multirow{12}{*}{Case-insensitive} & \multirow{3}{*}{Contains}               & Least frequent              & 0.20\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 0.14\%   \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \cline{3-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{In first sentence}      & Least frequent              & 0.20\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 3.03\%     \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.20\%    \\ \cline{3-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{First word in sentence} & Least frequent              & 0.20\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 0.61\%   \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \cline{3-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{Linked article titles}  & Least frequent              & 0.40\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 9.49\%    \\ \cline{4-5} 
+%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \hline
+%\end{tabular}
+%\end{table}
+
+% Please remember to add \use{multirow} to your document preamble in order to suppor multirow cells
+\begin{center}
+\begin{table}[h]
+\caption{Indexing results using 2000 features.}
+\begin{tabular}{cllll}
+\multicolumn{1}{l}{\textbf{\begin{tabular}[c]{@{}c@{}}Sensitivity\end{tabular}}} & \textbf{Feature} & \textbf{Sampling Technique} & \textbf{Accuracy} \\ \hline
+\multirow{12}{*}{Case-sensitive}   & \multirow{3}{*}{Contains}               & Least frequent              & 0.20\%    \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Most frequent               & 0.13\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Random                      & 0.20\%  \\ \cline{2-4} 
+\multicolumn{1}{l}{}                                    & \multirow{3}{*}{In first sentence}      & Least frequent              & 0.20\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Most frequent               & 1.82\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Random                      & 0.20\%  \\ \cline{2-4} 
+\multicolumn{1}{l}{}                                    & \multirow{3}{*}{First word in sentence} & Least frequent              & 0.20\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Most frequent               & 0.61\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Random                      & 0.40\%  \\ \cline{2-4} 
+\multicolumn{1}{l}{}                                    & \multirow{3}{*}{Linked article titles}  & Least frequent              & 0.20\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Most frequent               & 1.21\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Random                      & 0.40\%  \\ \cline{1-4} 
+\multicolumn{1}{l}{} \multirow{12}{*}{Case-insensitive} & \multirow{3}{*}{Contains}               & Least frequent              & 0.20\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Most frequent               & 0.14\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Random                      & 0.40\%  \\ \cline{2-4} 
+\multicolumn{1}{l}{}                                    & \multirow{3}{*}{In first sentence}      & Least frequent              & 0.20\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Most frequent               & 3.03\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Random                      & 0.20\%  \\ \cline{2-4} 
+\multicolumn{1}{l}{}                                    & \multirow{3}{*}{First word in sentence} & Least frequent              & 0.20\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Most frequent               & 0.61\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Random                      & 0.40\%  \\ \cline{2-4} 
+\multicolumn{1}{l}{}                                    & \multirow{3}{*}{Linked article titles}  & Least frequent              & 0.40\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}                                    &                                         & Most frequent               & 9.49\%  \\ \cline{3-4} 
+\multicolumn{1}{l}{}									   &                                         & Random                      & 0.40\%  \\ \hline
+\end{tabular}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table}[h]
+\caption{Indexing results using 2000 features, sorted by accuracy, descending.}
+\begin{tabular}{llll}
+\textbf{Sensitivity} & \textbf{Feature}       & \textbf{Sampling Technique} & \textbf{Accuracy $\downarrow$} \\ \hline
+Case-insensitive     & Linked article titles  & Most frequent               & 9.49\%             \\ \hline
+Case-insensitive     & In first sentence      & Most frequent               & 3.03\%             \\ \hline
+Case-sensitive       & In first sentence      & Most frequent               & 1.82\%             \\ \hline
+Case-sensitive       & Linked article titles  & Most frequent               & 1.21\%             \\ \hline
+Case-sensitive       & First word in sentence & Most frequent               & 0.61\%             \\ \hline
+Case-insensitive     & First word in sentence & Most frequent               & 0.61\%             \\ \hline
+Case-sensitive       & First word in sentence & Random                      & 0.40\%             \\ \hline
+Case-sensitive       & Linked article titles  & Random                      & 0.40\%             \\ \hline
+Case-insensitive     & Contains               & Random                      & 0.40\%             \\ \hline
+Case-insensitive     & First word in sentence & Random                      & 0.40\%             \\ \hline
+Case-insensitive     & Linked article titles  & Random                      & 0.40\%             \\ \hline
+Case-insensitive     & Linked article titles  & Least frequent              & 0.40\%             \\ \hline
+Case-sensitive       & Contains               & Random                      & 0.20\%             \\ \hline
+Case-sensitive       & Contains               & Least frequent              & 0.20\%             \\ \hline
+Case-sensitive       & In first sentence      & Random                      & 0.20\%             \\ \hline
+Case-sensitive       & In first sentence      & Least frequent              & 0.20\%             \\ \hline
+Case-sensitive       & First word in sentence & Least frequent              & 0.20\%             \\ \hline
+Case-sensitive       & Linked article titles  & Least frequent              & 0.20\%             \\ \hline
+Case-insensitive     & Contains               & Least frequent              & 0.20\%             \\ \hline
+Case-insensitive     & In first sentence      & Random                      & 0.20\%             \\ \hline
+Case-insensitive     & In first sentence      & Least frequent              & 0.20\%             \\ \hline
+Case-insensitive     & First word in sentence & Least frequent              & 0.20\%             \\ \hline
+Case-insensitive     & Contains               & Most frequent               & 0.14\%             \\ \hline
+Case-sensitive       & Contains               & Most frequent               & 0.13\%             \\ \hline
+\end{tabular}
+\end{table}
+\end{center}
