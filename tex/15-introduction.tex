@@ -6,9 +6,11 @@ Despite concerns that the paper book is on it's way out, the book publishing ind
 
 % New Books Published per Year Graph
 \begin{center}
+\begin{figure}
+\label{fig:new-books}
 \begin{tikzpicture}
 	\begin{axis}[
-		title={New Books Published by Year},
+		title={New Books Published by Year in the United States},
 		xlabel={Year},
 		xticklabel style={/pgf/number format/1000 sep=},
 		ylabel={Books (thousands)},
@@ -50,6 +52,8 @@ Despite concerns that the paper book is on it's way out, the book publishing ind
 		\addlegendentry{projected}
 	\end{axis}
 \end{tikzpicture}
+\caption{Publication statistics for traditional books published in the U.S.\cite{bowker}}.
+\end{figure}
 \end{center}
 
 It's a fair assumption that many of these new books also contain an index section between their covers.
@@ -65,10 +69,10 @@ The growing number of books published each year and the need for quality indexes
 Since many books contain indexes, any change in the indexing industry directly affects the publication industry.
 If indexing could be made more efficient, the publishing industry could allocate the significant resources that would have gone toward indexing to other, more productive areas.
 
-In {\it Indexing Books}, Nancy Mulvany writes that, ``a typical three-hundred-page book can easily cost close to a thousand dollars to index.
-This was in 1994.
-Adjusted for inflation using the U.S. Bureau of Labor Statistics' online calculator, \$1,000 dollars in 1994 is equivalent to \$1,578.38 in 2014\cite{inflation-calculator}.
-Mulvany goes on to estimate the typical price-per-page at three 1993 U.S. dollars per page in 1994\cite{mulvany}, which is equivalent to \$4.74 in 2014\cite{inflation-calculator}.
+In {\it Indexing Books}, Nancy Mulvany writes that, ``a typical three-hundred-page can easily cost a thousand dollars or more to index.
+An example, later in Mulvany's book, estimates a 300 page book at \$1,200.
+This was in 2005.
+Mulvany goes on to estimate the typical price-per-page at 4--6 2005 U.S. dollars\cite{mulvany}.
 
 The amount of time and money spent on indexing annually can be quantified if a few simplifying assumptions are established.
 All rows without citations are conservative guesses for the purpose of estimation:
@@ -82,7 +86,7 @@ $b$ & Number of books published in 2010 \cite{bowker} & 328,259 books \\
 \hline
 $c$ & Percentage of Books requiring Indexes & 15\% \\
 \hline
-$d$ & Average dollars per page indexed \cite{mulvany,inflation-calculator} & \$4.74 \\
+$d$ & Average dollars per page indexed \cite{mulvany} & \$5 \\
 \hline 
 $p$ & Average Number of Pages in Book & 300 pgs \\ 
 \hline 
@@ -97,16 +101,23 @@ Given these variables, equations are developed to calculate average cost and tim
 $$ \text{cost} = b \times c \times p \times d $$
 $$ \text{time} = \frac{b \times c \times p}{r} $$
 \\
-$$ 69,377,744.70 \text{ USD} = 328259 \times 0.15 \times 300 \times 4.74 $$
+$$ 73,858,275 \text{ USD} = 328259 \times 0.15 \times 300 \times 5 $$
 $$ 240 \text{ years}= 2,110,236.48 \text{ hours} = \frac{328259 \times 0.15 \times 300}{7}$$
 \caption{The Price of Manual Indexing}
 \end{figure}
 
-Even with the very conservative assumptions that the average book contains 300 pages and 15\% of books require indexes, the cost of indexing new US books in 2010 was incredibly high.
+It is possible to approximate the cost of indexing the 328,259 new books published in 2010 (p.~\pageref{fig:new-books}) by making some conservative assumptions that the average book contains 300 pages, the average price-per-page indexing cost of \$5, and 15\% of books require indexes.
+An estimate generated using these numbers reveals that over 70 million dollars were spent on indexing books in 2010. Work hours spent creating indexes is also revealing.
+
+Using a professional indexer's average rate of 7 pages per hour, a similar calculation estimates that over 2 million work hours were spent creating indexes for 2010's new books. It would take a single person 240 years of indexing non-stop.
+
 These numbers reveal the economic impact of indexing, but the individual impact is important too.
 If an author wants to index his or her own book, it would take about 42 hours on average. The author could devote an entire work week towards something more productive if there existed an easier way to generate an index.
 Clearly, indexing is a significant part of the publishing industry.
-natural language processing, a growing specialization of computer science, might be able to reduce these high costs.
+Computer software might be able to reduce these high costs.
+
+% TODO: Computer software paragraph.
+Natural language processing, a growing specialization of computer science, could potentially reduce these costs even further.
 
 \begin{figure}
 $$ 42 \text{ hours} = \frac{300}{7} = \frac{p}{r}$$
