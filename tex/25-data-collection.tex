@@ -1,10 +1,21 @@
 \section{Data Collection}
+% TODO: Explain indexToWiki table entry (possibly done already, verify.
+% TODO: Explain indexToWiki.json (formed by hand from SQL csv output to json) `SELECT indexTitle, wikiTitle FROM thesis.indexToWiki;`
+% TODO: Explain rankedTitles.txt
 
 This research leverages supervised learning algorithms, meaning it requires a training set and a test set to develop an appropriate feature set to use in conjunction with the supervised learning algorithm.
 The training set allows the algorithm to ``learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
-Unlike most implementations of supervised learning algorithms, the test and training set data come from different sources.
-Wikipedia is used for the training set, and a PDF textbook is used for test data.
-The following sections contain justification for the choice of data to used for each set, and the methods used to structure and collect that data for analysis.
+
+Classically, training and test data come from the same corpus, the same set of data\cite{jurafsky}.
+This research takes test and training set data from two different, mutually exclusive corpora.
+The training set is composed of paragraphs from Wikipedia articles, with each paragraph labeled by the title of the article it belongs to.
+The test data contain paragraphs from the OpenStax {\it Biology} textbook\cite{biology}, with each paragraph labeled by the index entry that refers to it\footnote{If a {\it Biology} paragraph is not referenced in the index, it is not included in the data set. If it is referenced by multiple index entries, the paragraph is included once per index entry.}
+
+Due to the sheer size of Wikipedia and the memory and computational power available for this research, the data set was reduced by selecting only paragraphs from Wikipedia articles whose title matched in index entry in {\it Biology}.
+Likewise, this research makes an assumption that the set of all reasonable index entries for any textbook is the same as the set of all titles in the English Wikipedia.
+This assumption lends itself to selecting only paragraphs from {\it Biology} whose labels are the same as Wikipedia article titles.
+
+The following sections contain justification for the choice of data for each set, and the methods used to structure and collect that data for analysis.
 
 \subsection{Test Set}
 
@@ -16,7 +27,7 @@ This textbook is 1477 pages long, containing an index of 3118 unique topics (lab
 In {\it Biology}, all words referred to by index entries are bolded in the text itself. Below is an example of what this looks like (bold in original):
 
 \begin{quote}
-Symbiotic relationships, or symbioses (plural), are close interactions between individuals of different species over an extended period of time which impact the abundance and distribution of the associating populations. \cite{biology}
+Symbiotic relationships, or {\bf symbioses} (plural), are close interactions between individuals of different species over an extended period of time which impact the abundance and distribution of the associating populations. \cite{biology}
 \end{quote}
 
 \noindent Here, the bold word ``symbioses'' is referred to by an index entry at the back of the book with the same name. All index entries point to bold words, and all bold words point to index entries. This fact makes it trivial to find which part of the page an index reference is referring to, making it a good candidate for test data.
@@ -24,8 +35,8 @@ Symbiotic relationships, or symbioses (plural), are close interactions between i
 \subsubsection{Structuring the Test Data}
 
 Useful though {\it Biology} is as a data source, it is not available in a structured, easily parsable format.
-In order to make the data in {\it Biology} useful, it needs to be converted from it source PDF into a structured form.
-To do this, a relational database is used to store the book's text alongside meta data like page number and paragraph location.
+In order to make the data in {\it Biology} usable, it needs to be converted from its source PDF into a structured form.
+A relational database is used to store the book's text so that it can be queried for its contents, paragraph location, page number, and other helpful attributes.
 
 \subsubsection{Importing Index Entries into Relational Database}
 
@@ -34,7 +45,7 @@ Regular expressions were used to massage the data into a simple, comma separated
 In this format, each line represents a unique index entry, with the first column in a line holding the index label (or name), and each subsequent column holds a page number the label can be found on.
 Now that the data are more easily parsable, there must be a way to it in a relational database for analysis purposes.
 
-It is important to create a table to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
+A table is created to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
 In this table, indexId is an autoincrementing ID, label is the name of the index entry as it appears in the book (e.g., ``Acid rain''), and wikiLabel is the label if the label were a wikipedia article name (e.g., ``Acid\_rain'') which is achieved by replacing spaces in the label with underscores.
 
 \begin{center}
@@ -53,7 +64,7 @@ wikiLabel \\
 \end{tabular}
 \end{center}
  
-An indexedPage table must exist to store index references (page numbers) that belong to index labels.
+An indexedPage table was created to store index references (page numbers) that belong to index labels.
 This table simply contains an indexId and a pageNum, which allows for joins onto the index table to replicate the whole index.
 
 \begin{center}
@@ -68,14 +79,14 @@ pageNum \\
 \end{tabular} 
 \end{center}
 
-Once these tables are created, the structured CSV file can be imported using the custom indexImporter.php (see Appendix B) tool written specifically for this purpose.
+Once these tables were created, the structured CSV file was imported using the custom indexImporter.php (see Appendix B) tool written specifically for this purpose.
 
 The importer script populates all of the columns in both tables with all of the data in the CSV file.
 
 \subsubsection{Reducing Index Entry Set}
 \label{subsec:reducing}
 
-Only index entries whose {\tt wikiLabel} value matches a Wikipedia page will be used in the analysis portion of this research.
+Only index entries whose {\tt wikiLabel} value matches a Wikipedia article title will be used in this research.
 This means that information need only be gathered from index entries that match this criteria.
 To discover this subset of index entries, a database of Wikipedia titles must be intersected with the {\tt index}.
 
@@ -227,22 +238,32 @@ Now the test set is considered processed, it is time to move on to the training 
 
 \subsection{Training Set}
 
-The training set is created from a list of Wikipedia articles determined by the intersection of Wikipedia article titles and index labels in section~\ref{subsec:reducing}.
+The training set is created from a list of Wikipedia articles whose titles are also index labels in {\it Biology} (see~\ref{subsec:reducing}).
 Since this list contains only titles, the contents of the article need to be fetched from Wikipedia itself.
 
 \subsubsection{Downloading the Training Data}
 
-Since there are 518 articles to fetch from Wikipedia, downloading each one by one would take time and go atainst Wikipedia's terms of service. Wikipedia does not allow the use of automated web crawlers when it can be avoided.
+Since there are 518 articles to fetch from Wikipedia, downloading each one by one would take time and go against Wikipedia's terms of service. Wikipedia does not allow the use of automated web crawlers when it can be avoided\cite{wiki-robots}.
 
-Instead, the articles are fetched using the Wikipedia page exporter \cite{wiki-exporter}, which produces an XML database dump file containing information about the articles and their contents in the MediaWiki markup language \cite{mediawiki-markup}.
-While MediaWiki is great for writing, it is difficult to parse out paragraphs.
-To solve this problem, the MediaWiki format must be converted to HTML, which has the useful {\tt <p>} tag delimiting paragraphs.
-Unfortunately, the only full featured MediaWiki to HTML converter is part of the MediaWiki platform itself.
+Instead, the articles were fetched using the Wikipedia page exporter \cite{wiki-exporter}, which produces an XML database dump file.
+This file contains the contents for all of the articles specified in the web form, plus extra information about the article like title and date of last edit.
+The contents of the article are stored in the MediaWiki markup language \cite{mediawiki-markup}.
+This language works similarly to other markup languages like HTML and Markdown, and is used everywhere on Wikipedia.
+Using the page exporter makes it possible to circumvent Wikipedia's rules about crawling the website because the export happens in one bulk data transfer rather than the many very small and frequent transfers a web crawler would make.
+
+Wikipedia content editors must use the MediaWiki language to edit pages. 
+While MediaWiki is great for writing and editing content, it is difficult for computers to directly query text written in the language.
+To solve this problem, the MediaWiki format must be converted to HTML.
+HTML has the useful {\tt <p>} tag, which is used to distinguish paragraphs from one another, a requirement for this research. 
+Unfortunately, the only full-featured MediaWiki to HTML converter is part of the MediaWiki platform itself.
+A computer must be made into a mini-Wikipedia by installing MediaWiki on it and importing data exported from Wikipedia itself.
 
 \subsubsection{Converting MediaWiki Markup to HTML}
 
-To work around this problem, a local MediaWiki server is installed using the online instructions \cite{mediawiki-installation}.
-All available first-party MediaWiki plugins were enabled in the installation, as Wikipedia uses many of them on their own MediaWiki installation.
+To convert articles to HTML, a local MediaWiki server was installed on a personal computer using MediaWiki's online instructions \cite{mediawiki-installation} with the purpose of creating a local version of Wikipedia that only contains the articles that share titles with index labels from {\bf Biology}.
+This mini-Wikipedia can then be crawled using printPageLinks.py to extract and store the HTML versions of the articles.
+
+After installation, all available first-party MediaWiki plugins were enabled in the installation, as Wikipedia uses many of them on their own MediaWiki installation.
 Once installed, the database import tool \cite{mediawiki-import} is used to import the XML file from Wikipedia's database dump into the local MediaWiki installation, creating a small version of Wikipedia containing only the articles needed for this research.
 The MediaWiki platform takes care of converting MediaWiki markup into HTML when it receives an HTTP request for a given article, just like with regular Wikipedia.
 
@@ -282,7 +303,7 @@ Here is an example of what a redirect page looks like in the XML database dump:
 Line 5 in the above sample shows a redirect tag that contains the title of the complete article this page redirects to.
 These redirect tags were discovered by using findRedirects.py.
 This script does two things.
-First, it changes the {\tt wikiTitle} field in the {\tt indexToWiki} table from the title of the redirect page (``$5\prime$ cap'' in the above example) to the title of the page it redirects to (``Five prime cap``).
+First, it changes the {\tt wikiTitle} field in the {\tt indexToWiki} table from the title of the redirect page (``$5^\prime$ cap'' in the above example) to the title of the page it redirects to (``Five prime cap``).
 Second, it prints out the wikified title (``Five prime cap'' becomes ``Five\_prime\_cap``) on each line of output.
 The results of the program's output is then copy-pasted back into the Wikipedia exporter \cite{wiki-exporter}, yielding a new XML database dump full of the complete articles.
 This XML file is then imported into the MediaWiki site, giving the redirect pages their respective targets to point to.
@@ -327,3 +348,7 @@ Neither of these traits are relevant to the article, so they can be safely remov
 Unlike disambiguation pages, locating and removing these errors followed a deterministic, repeatable process.
 The offending pages are located using the pattern matching script cullSpuriousArticleText.sh hand the offending lines were removed by hand.
 Manually deleting the spurious lines prevented false positive matches from being removed from the articles, since this text could conceivably (however unlikely) appear in-context within the text of an article.
+
+\subsection{Discovering Most Commonly Linked Articles}
+
+TODO: Explain extractPageLinks.py's creation of rankedTitles.tsv and conversion of rankedTitles.tsv to rankedTitles.txt here. Share information about most popular linked titles.

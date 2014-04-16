@@ -3,15 +3,122 @@
 The process of creating an index is either costly or time consuming for authors, depending on whether they choose to create the index themselves or pay someone to do it.
 The act of creating an index is labor and organization intensive, often requiring a text to be read multiple times while keeping track of entries electronically or on index cards.
 
-Since indexing a book is so expensive and time consuming, it makes sense to see if computers can be used to generate an index that is nearly as accurate as human indexers.
+Since indexing a book is so expensive and time consuming, it makes sense to see if computers can be used to generate an index that is nearly as accurate as human indexing professionals.
 To automate the indexing process, software exists to replace the indexer's index cards with a more efficient computerized organization system.
 However, there is a new, rising interest in seeing if computers can generate indexes deterministically, without the help of human beings.
 To do this, software engineers and researchers must apply natural language processing techniques in new and interesting ways.
+Before any application, one must understand how well humans can generate indexes to understand how accurate computer need to be in order to match them.
 
-\subsection{Indexing Process}
-% How humans create indexes today.
+\subsection{Accuracy of Human and Automatic Indexes}
 
+In {\it Natural-Language Processing and Automatic Indexing}, an article published in {\it The Indexer} by C. Korycinski and Alan F. Newell, the authors cite relevant metrics for automatic indexing excerpted from Cleverdon's work:
 
-Although statistics on the number of books that have indexes or the number new textbooks per year do not appear to exist, it seems a safe assumption to 
+\begin{quote}
+\begin{enumerate}
+\item if two people or groups of people construct thesauri in a given subject area, only 60\% of the index terms may be common to both;
+\item if two experienced indexers index a given document using a given thesaurus, only 30\% of the index terms may be common to the two sets;
+\item if two intermediaries [person who undertakes a database search on behalf of the user] search the same question on the same database on the same host, only 40\% of theoutput may be common to both searches;
+\item if two scientists or engineers are asked to judge the relevance of a given set of documents to a given question, the area of agreement may not exceed 60\%.\cite{automatic-indexing}
+\end{enumerate}
+\end{quote}
+
+Of course, 2 is most relevant, but the other three reveal how imprecisely human beings perform tasks that replicate another human's work.
+In the statistics given above, indexing is the least precise of all of the human classification tasks mentioned above.
+This makes the number to match for an automatic indexer 30\%.
+That is, a computer index compared to a human index should display the same proportion of similarity as a human generated index compared to another human generated index.
+Now that a metric for index quality has been established, the next section backgrounds methods and strategies that can be used to create an automatic indexer that might be able to match this benchmark.
 
 \subsection{Natural Language Processing}
+
+Natural language processing (NLP) is, ``a form of computational linguistics in which natural-language texts are processed by computer (for automatic machine translation, literary text analysis, etc.)''\cite{oed-nlp}.
+Essentially, it is the area of study in computer science where language and logic meet.
+The sub-discipline of natural language processing (NLP) has existed since the beginning of electronic computers themselves (around 1940), but it has not existed in the modern sense until more recently.
+Today, there is a growing focus on teaching computers to understand and learn the desired qualities of a text so they can be analyzed and extracted from large amounts of textual data\cite{jurafsky}.
+
+Internet search engines like Google rely on NLP techniques to generate their search results\footnote{As of March 1, 2014, Google has published 219 whitepapers on NLP topics, primarily on how to use NLP to improve search results.\cite{google-nlp}}, text editing software uses NLP to detect grammatical errors in sentences\cite{norvig}, and mobile applications use NLP to extract summaries from long form text\cite{bit-of-news}.
+
+\subsubsection{Machine Learning}
+
+The process of teaching computer to learn and understand information is called machine learning.
+Computer learning sounds complicated, but ultimately machine learning is about programming computers to answer questions about new, previously unseen data by correlating it to data it has previously seen, or {\it trained} on.
+In {\it Natural Language Processing with Python}, an introductory NLP textbook, the authors use the example of name genders ({\it e.g.}, {\it Mike} is male and {\it Valerie} is female) to help readers understand how machine learning is used to help computers understand language\cite{nlpwp}.
+Given a list of names, a computer can be taught to determine (with reasonably high accuracy) whether a new, unseen name is masculine or feminine.
+English readers use certain heuristics (shortcuts) to aid in determining the gender of a name, and computers can do the same.
+For example, an average person might know that names ending in {\it -a} are typically feminine, while names ending in {\it -o} are typically masculine, so he or she understands that the last letter is a strong determinant of a name's gender, or {\it label}.
+In NLP, these determinants are known as {\it features}.
+With enough data about names and their genders (a {\it training set}), the probability of a letter determining a particular gender can be calculated, and a person could be {\it trained} using this data and the "last letter" feature to guess name genders with reasonable accuracy.
+Of course, the last letter is not the only feature of a name that determines its gender, and by training with additional relevant features the classifier's guesses can be made more accurate.
+Indeed, this process of determining the category (or {\it class}) of an item is called {\it classification}.
+The above is an example a {\it supervised} machine learning, since training data is involved.
+Unsupervised machine learning algorithms are outside the scope of this research, and will not be mentioned further in this paper.
+
+\subsubsection{Document Classification}
+% Document classification and automatic indexing
+Document classification is a type of NLP that uses machine learning methods like those above, and is used in this research to create a computer generated index.
+Document classification involves taking a piece of text (known as a {\it document}) as input and producing a label or {\it class} as output\cite{jurafsky}%.
+Determining a name's gender can be thought of as document classification on a very small scale; a ``document'' in that case is a single name.
+When applying document classification to automatic indexing, the size of the input documents must be defined.
+Since classifiers label every input document with the most probable class\footnote{Classifiers do not have an ``unsure'' or ``ambiguous'' category; if the gender of a particular name is confusing, it is still assigned a gender according to the gender that is most likely, even if it is only slightly more likely than another gender.} the size of the document should be the smallest piece of text likely to contain an index reference.
+Since no research recommending a document size for automatic indexing tools exists, this research elects to use paragraphs as documents, such that a book containing $n$ paragraphs would be split up into $n$ unique documents.
+
+Selecting a document size creates room for error, since one paragraph ought not to have any index references, and another might have more than one.
+This is a problem, because a document classifier assigns each document one and only one class.
+While typically a paragraph will likely only have one index reference, the uncommon but possible cases of $r = 0$ and $r > 1$, where $r$ represents the number of references in a paragraph, must be handled gracefully and consistently.
+The parameters for success in each of these cases are defined below:
+
+\begin{itemize}
+\item In the trivial $r = 1$ case, a document is successfully labeled when it is labeled with the same class as the human generated index for the same text.
+\item In the case of $r > 1$, this research considers a document successfully labeled if it is assigned one of the same index labels as the source text's index.
+\item In the case of $r = 0$, a document can never be successfully labeled, since the classifier must assign the document a class and ``none'' is not an option. This limitation is disappointing, but impossible to avoid when using document classifiers.
+\end{itemize}
+
+This research makes the overarching that a book with $n$ paragraphs has $n$ index references, or page number references in the book's index.
+Clearly, this is an unrealistic assumption, but when dealing with document classification it is an assumption that must be made.
+
+To clarify terminology, this index is considered to have two index entries or labels, and five index or page number references:
+
+\begin{center}
+\textit{aardvark} 12, 32, 54, 67 \\
+\textit{apple}, 34
+\end{center}
+
+\noindent This does {\it not} mean that a book is assumed to have $n$ unique words or phrases in its index, just that the collection of index words and phrases {\it points to} $n$ pages, since a singular index word might be referenced in multiple places (as seen in {\it aardvark} above).
+
+\subsubsection{Na{\"i}ve Bayes Classifiers}
+
+There are many different methods of classification, including decision trees, na{\"i}ve Bayes, and maximum entropy classifiers\cite{nlpwp}, but this research only evaluates efficacy of the na{\"i}ve Bayes classifier in the task of automated indexing.
+As far as classifiers go, \naive Bayes is one of the simplest implementations\cite{rish}.
+How it functions is described below:
+\begin{quote}
+The \naive Bayes classifier begins by calculating the prior probability of each label, which is determined by checking the frequency of each label in the training set. The contribution from each feature is then combined with this prior probability, to arrive at a likelihood estimate for each label. The label whose likelihood estimate is the highest is then associated to the input value.\cite{nlpwp}
+\end{quote}
+\noindent Once trained, each feature is assigned one label.
+In classification, any occurrence of a feature will ``push'' the document further towards the feature's assigned label.
+When a feature ``pushes'' a document towards another label, it also pushes it towards similar labels, and an equal-but-opposite reaction hurts labels that are dissimilar from the occurring feature's label.
+
+The decision to use \naive Bayes primarily motivated by simplicity, but it is important to acknowledge that this simplicity comes with a small cost in accuracy.
+Since little research has been done on the use of document classification for automatic index generation, it made sense to begin with a simple implementation of such a classifier before even considering to work with something more complex like the maximum entropy classifier.
+\Naive Bayes is considered simple because it makes a strong assumption that all features are independent from one another, that the appearance of one feature does not affect the possibility that another will appear.
+This assumption is unrealistic as the probability of one feature might increase or decrease if another feature is present, creating an instance of conditional probability.
+Ignoring conditional probability can lead to a phenomena called double counting.
+This phenomena can be clearly seen if two features ``contains(apple)'' and ``contains(gala apple)'' are present in the same feature set.
+The probability of ``apple'' occurring if `gala apple'' has already occurred is 1, and conversely the probability of ``gala apple'' occurring is increased when ``apple'' is present.
+Although \naive Bayes' independence assumption does have some bearing on the result of the classification, research shows that this affect is largely negligible for most feature and data sets.
+
+Irene Rish affirms in an IBM white paper that \naive Bayes works well with completely independent features {\it and} functionally dependent features (which should be surprising).
+Her research also notes that, ``a better predictor of \naive Bayes accuracy is the amount of information about the class that is lost because of the independence assumption''\cite{rish}.
+These findings suggest that \naive Bayes should prove to be a sufficiently accurate predictor of the efficacy of using document classification for automatic indexing, despite the assumptions the algorithm makes about independence.
+
+After deciding upon \naive Bayes, the next step for this research was to select an implementation of the algorithm to use for analysis.
+
+\subsubsection{Natural Language Toolkit}
+
+Many different libraries of machine learning and NLP tools\cite{stanford-nlp,open-nlp} exist, this research selected Python's Natural Language Processing Toolkit (NLTK) library\cite{nltk} for its popularity, flexibility, large selection of both NLP and machine learning tools, thorough documentation, and ease of use.
+
+Publicly released in 2009, NLTK has become a staple in the world of NLP.
+Even with well over 4,000 Python packages in the Python Package Index (PyPI), PyPI Ranking cites NLTK as having over 180,000 downloads, making it the \nth{273} most downloaded Python package of all time, and Python's most popular NLTK package\cite{pypi-ranking}.
+The latest available stable version of NLTK (v2.0.4) was used for the entirety of this research.
+
+Python, the language NLTK is written for, is used for data analysis throughout this research.
+Python is a mature and robust high-level scripting and prototyping language, and is therefore well-suited to the task of exploratory research.
+This research uses the latest version of Python 2, since NLTK only provides alpha-level support for Python 3\cite{nltk-install}.

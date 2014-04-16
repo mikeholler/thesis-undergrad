@@ -6,7 +6,7 @@ Despite concerns that the paper book is on it's way out, the book publishing ind
 
 % New Books Published per Year Graph
 \begin{center}
-\begin{figure}
+\begin{figure}[H]
 \label{fig:new-books}
 \begin{tikzpicture}
 	\begin{axis}[
@@ -114,22 +114,36 @@ Using a professional indexer's average rate of 7 pages per hour, a similar calcu
 These numbers reveal the economic impact of indexing, but the individual impact is important too.
 If an author wants to index his or her own book, it would take about 42 hours on average. The author could devote an entire work week towards something more productive if there existed an easier way to generate an index.
 Clearly, indexing is a significant part of the publishing industry.
-Computer software might be able to reduce these high costs.
+Computer software might be able to reduce these high costs, but first it is important to understand the indexing process before computers.
 
-% TODO: Computer software paragraph.
-Natural language processing, a growing specialization of computer science, could potentially reduce these costs even further.
+\subsection{Indexing Methods}
 
-\begin{figure}
-$$ 42 \text{ hours} = \frac{300}{7} = \frac{p}{r}$$
-\end{figure}
+Historically, indexing was all done by hand, without the assistance of technology beyond a stack of 3'' x 5'' note cards and a pen.
+The ``index card'' method, as it is called, has the indexer create a separate index card for each word or phrase that appears in the index.
+These note cards are created on the first pass through the document being indexed, and then they are organized alphabetically.
+On the next and subsequent passes, the indexer combs the text looking for references to the words and phrases generated on the first pass, and records each occurrence on the appropriate note card.
+At the end of this process, the selection of words and phrases is edited and then typeset \cite{mulvany}.
+While this old fashioned method worked in the many years before computers became the powerful productivity tools they are today, computers now help indexers by providing purpose-built software that, in effect, replaces the paper note cards with a more efficient digital representation.
 
-\subsection{Natural Language Processing}
-% Talk about the rise of natural language processing.
+The author of {\it Indexing Books} describes computer-aided indexing by breaking indexing software used into major two types: embedded and dedicated.
+Embedded indexing software helps a writer or an indexer mark, in the electronic text itself, the words and phrases that he or she wants to be indexed \cite{mulvany}.
+Examples of embedded indexing software are Microsoft Word \cite{ms-word-indexing} and \LaTeX \cite{lamport}.
+Dedicated indexing software, on the other hand, only provides tools whose purpose is to make creating an index easier, like the ability to digitize entries, sort them, and structure them in different ways\cite{mulvany}.
+Dedicated software is different from embedded because dedicated does not allow the user to modify or display the full text of the work itself, instead focusing only on the index.
+Examples of dedicated software are Macrex\cite{macrex} and SKY Index Professional\cite{sky-software}.
+While these two types of software help people generate indexes, it is not the type of software this research is concerned with.
 
-Natural language processing (NLP) is, ``a form of computational linguistics in which natural-language texts are processed by computer (for automatic machine translation, literary text analysis, etc.)''\cite{oed-nlp}.
-The sub-discipline of natural language processing (NLP) has existed since the beginning of computers themselves (around 1940), but it has not existed in the modern sense until more recently.
-Today, there is a growing focus on machine learning algorithms and processing large amounts of textual data\cite{jurafsky}.
-Internet search engines like Google rely on NLP techniques to generate their search results\footnote{As of March 1, 2014, Google has published 219 whitepapers on NLP topics, principally how to use NLP to improve search results.\cite{google-nlp}}, text editing software uses NLP to detect grammatical errors in sentences\cite{norvig}, and mobile applications use NLP to extract summaries from long form text\cite{bit-of-news}.
+Automatic indexing is the lesser known third type of indexing software, and it is the subject of this research.
+Mulvany defines automatic indexing software as that which, ``conjures up images of indexing at the push of a button, the computer taking care of all the drudgery and the thinking involved in creating an index''\cite{mulvany}.
+Although she recognizes it as a computer science research focus, she does not think highly of present-day automatic indexing, stating that, ``There is nothing automatic about the index-writing process.
+There is no automatic indexing tool available that could produce the index in the back of this book''\cite{mulvany}.
+Given the career implications of automatic indexing on indexing professionals, it is unsurprising that Mulvany is skeptical.
+However, for the most part she is correct: current software does not perform as well as humans at the task of indexing a book.
+If it did perform better than humans, than publishers and authors would be purchasing the software rather than hiring indexers.
 
+The goal of this research is to further the knowledge of automatic indexing by applying techniques from Natural Language Processing (NLP), a subfield of Computer Science that concerns itself with teaching computers to understand language mechanics.
+The next section takes a brief look at what Natural Language Processing is, and how it pertains to indexing.
+
+% TODO: Explain/preview structure of paper.
 
 
