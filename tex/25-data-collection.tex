@@ -1,7 +1,5 @@
 \section{Data Collection}
-% TODO: Explain indexToWiki table entry (possibly done already, verify.
-% TODO: Explain indexToWiki.json (formed by hand from SQL csv output to json) `SELECT indexTitle, wikiTitle FROM thesis.indexToWiki;`
-% TODO: Explain rankedTitles.txt
+\label{sec:data-collection}
 
 This research leverages supervised learning algorithms, meaning it requires a training set and a test set to develop an appropriate feature set to use in conjunction with the supervised learning algorithm.
 The training set allows the algorithm to ``learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
@@ -18,6 +16,7 @@ This assumption lends itself to selecting only paragraphs from {\it Biology} who
 The following sections contain justification for the choice of data for each set, and the methods used to structure and collect that data for analysis.
 
 \subsection{Test Set}
+\label{subsec:test-set}
 
 Since the goal of this research is to create an index for a book, the test set is generated from a textbook with a comprehensive index section.
 This textbook is called {\it Biology} \cite{biology}, and is freely available from OpenStax \cite{openstax-bio} under the Creative Commons Attribution license.
@@ -237,6 +236,7 @@ It is also important to note that a paragraph will be placed in multiple files i
 Now the test set is considered processed, it is time to move on to the training set.
 
 \subsection{Training Set}
+\label{subsec:training-set}
 
 The training set is created from a list of Wikipedia articles whose titles are also index labels in {\it Biology} (see~\ref{subsec:reducing}).
 Since this list contains only titles, the contents of the article need to be fetched from Wikipedia itself.
@@ -268,6 +268,7 @@ Once installed, the database import tool \cite{mediawiki-import} is used to impo
 The MediaWiki platform takes care of converting MediaWiki markup into HTML when it receives an HTTP request for a given article, just like with regular Wikipedia.
 
 \subsubsection{Finding Redirects}
+\label{sec:finding-redirects}
 
 Inspection of the articles imported into the local MediaWiki installation showed that a large number of the articles are actually just redirect pages to a complete article with a different name.
 The Wikipedia exporter does not provide full pages the redirect pages reference.
@@ -311,6 +312,7 @@ This XML file is then imported into the MediaWiki site, giving the redirect page
 The process of resolving redirects did not need to be done on the second XML database dump because it only contained full articles (no redirects to other pages).
 
 \subsubsection{Saving Pages as HTML}
+\label{sec:html-pages}
 
 Since all necessary articles have been imported into the local MediaWiki server, it is now possible to download them all in HTML.
 To do this, a list of links to each of the articles imported into the MediaWiki server is required.
@@ -349,6 +351,31 @@ Unlike disambiguation pages, locating and removing these errors followed a deter
 The offending pages are located using the pattern matching script cullSpuriousArticleText.sh hand the offending lines were removed by hand.
 Manually deleting the spurious lines prevented false positive matches from being removed from the articles, since this text could conceivably (however unlikely) appear in-context within the text of an article.
 
-\subsection{Discovering Most Commonly Linked Articles}
+\subsubsection{Discovering Most Commonly Linked Articles}
 
-TODO: Explain extractPageLinks.py's creation of rankedTitles.tsv and conversion of rankedTitles.tsv to rankedTitles.txt here. Share information about most popular linked titles.
+During analysis, (see section~\ref{sec:feature-links}), it was deemed useful to have a list of Wikipedia article titles that are linked to in the training set of Wikipedia articles, ranked most-linked-to first.
+It is important to remember that the title of a linked Wikipedia article is not necessarily the same as the title of the linked text that the user may click on to visit the linked article.
+
+An example of this is shown in a piece of HTML excerpted from the Biology article, which displays ``branches and subdisciplines'' to the user, but actually links to the article titled ``List of biology disciplines'':
+\begin{lstlisting}[language=HTML]
+<a href="/wiki/List_of_biology_disciplines"
+   title="List of biology disciplines"
+   class="mw-redirect">branches and subdisciplines</a>
+\end{lstlisting}
+\noindent For the purpose of this research, it is the contents of the title attribute that need to be extracted and ranked by most frequently linked.
+These titles were pulled from the ``a'' link elements in the HTML versions of the Wikipedia pages mentioned in section~\ref{sec:html-pages} by using extractPageLinks.py to generate a rankedTitles.txt file.
+
+\subsection{Mapping the Training Set to the Test Set}
+
+Before discovering that some of the Wikipedia articles were actually empty redirect pages in section~\ref{sec:finding-redirects}, there was thought to be a direct mapping between {\it Biology} index labels and Wikipedia articles.
+Afterwards, it was established that the link between an index label and its article may be transitive through redirect pages.
+The section maintained a mapping from index label from Wikipedia article in the indexToWiki table by resolving page redirects.
+Although this information is stored in the relational database, it is easier to make use of the data if it exists in an easily portable file, rather than a more difficult to move database.
+This makes it easy to distribute the analysis portion of the research using commodity hardware offline.
+Therefore, a CSV copy of this mapping was created using the following SQL call:
+\begin{lstlisting}[language=SQL]
+SELECT indexTitle, wikiTitle FROM thesis.indexToWiki;
+\end{lstlisting}
+\noindent Since the size of the resulting indexToWiki.json was reasonably small, the file was converted to JSON by hand using vim and regular expressions.
+
+Now that all of the data have been collected, parsed, and organized, the analysis of the data and attempt at automatically regenerating {\it Biology}'s index may begin.

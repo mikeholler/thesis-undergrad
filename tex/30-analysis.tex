@@ -1,44 +1,42 @@
 \section{Analysis}
 
-% Results including Number of Samples.
-% Please remember to add \use{multirow} to your document preamble in order to suppor multirow cells
-%\begin{table}[h]
-%\begin{tabular}{cllll}
-%\hline
-%\multicolumn{1}{l}{\textbf{\begin{tabular}[c]{@{}c@{}}Number of \\ Samples\end{tabular}}} & \textbf{Sensitivity}               & \textbf{Feature}                        & \textbf{Sampling Technique} & \textbf{Accuracy} \\ \hline
-%\multirow{24}{*}{2000}                                                                    & \multirow{12}{*}{Case-sensitive}   & \multirow{3}{*}{Contains}               & Least frequent              & 0.20\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 0.13\%   \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.20\%    \\ \cline{3-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{In first sentence}      & Least frequent              & 0.20\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 1.82\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.20\%    \\ \cline{3-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{First word in sentence} & Least frequent              & 0.20\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 0.61\%   \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \cline{3-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{Linked article titles}  & Least frequent              & 0.20\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 1.21\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \cline{2-5} 
-%\multicolumn{1}{l}{}                                                                      & \multirow{12}{*}{Case-insensitive} & \multirow{3}{*}{Contains}               & Least frequent              & 0.20\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 0.14\%   \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \cline{3-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{In first sentence}      & Least frequent              & 0.20\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 3.03\%     \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.20\%    \\ \cline{3-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{First word in sentence} & Least frequent              & 0.20\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 0.61\%   \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \cline{3-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    & \multirow{3}{*}{Linked article titles}  & Least frequent              & 0.40\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Most frequent               & 9.49\%    \\ \cline{4-5} 
-%\multicolumn{1}{l}{}                                                                      &                                    &                                         & Random                      & 0.40\%    \\ \hline
-%\end{tabular}
-%\end{table}
+This research uses NLTK's implementation of a \naive Bayes classifier to determine the efficacy of using document classifiers for automatic textbook indexing, as established in section~\ref{sec:indexing-methods}.
+In order to function properly, a \naive Bayes classifier requires well-defined training, test, class, and features sets.
+Sections \ref{subsec:training-set} and \ref{subsec:test-set} outline the training set of Wikipedia article paragraphs and test set of {\it Biology} textbook paragraphs respectively, while section~\ref{subsec:reducing} described the set of classes the classifier will draw from to assign each input paragraph  ``document'' a single label.
 
-% Please remember to add \use{multirow} to your document preamble in order to suppor multirow cells
+\subsection{Feature Set}
+
+Arguably the single most important part of the document classifier is its feature set, and the quality of the feature(s) chosen for the training and test data can mean the difference between a highly accurate classifier and a faulty one.
+To make the most of the data collected earlier (see~\ref{sec:data-collection}), 24 trials are run, each using a different feature set.
+While each of the 24 feature sets are indeed different, they created from all of the possible combinations of three different feature characteristics: case-sensitivity, feature, and sampling technique.
+
+\subsubsection{Case Sensitivity}
+
+\subsubsection{Feature}
+
+\subsubsubsection{Contains}
+\subsubsubsection{In First Sentence}
+\subsubsubsection{First Word in Sentence}
+\subsubsubsection{Linked Article Titles}
+
+\subsubsection{Feature Sampling Technique}
+
+\subsubsection{Feature Sample Size}
+
+\subsection{Conducting the Experiment}
+
+\subsection{Experimental Results}
+
+The experiment's 24 trials are summarized by the two tables below.
+Both tables contain the same results, but they are presented in two different ways to aid understanding.
+Table~\ref{tab:results-grouped} presents the experiment's results grouped by feature characteristic, making it possible to easily locate and compare the effectiveness between features with many similar characteristics.
+% More about the table here, and particularly what is interesting about it.
+
 \begin{center}
 \begin{table}[h]
 \caption{Indexing results using 2000 features.}
 \begin{tabular}{cllll}
-\multicolumn{1}{l}{\textbf{\begin{tabular}[c]{@{}c@{}}Sensitivity\end{tabular}}} & \textbf{Feature} & \textbf{Sampling Technique} & \textbf{Accuracy} \\ \hline
+\multicolumn{1}{l}{\textbf{\begin{tabular}[c]{@{}c@{}}\label{tab:results-grouped}Sensitivity\end{tabular}}} & \textbf{Primary Feature} & \textbf{Sampling Technique} & \textbf{Accuracy} \\ \hline
 \multirow{12}{*}{Case-sensitive}   & \multirow{3}{*}{Contains}               & Least frequent              & 0.20\%    \\ \cline{3-4} 
 \multicolumn{1}{l}{}                                    &                                         & Most frequent               & 0.13\%  \\ \cline{3-4} 
 \multicolumn{1}{l}{}                                    &                                         & Random                      & 0.20\%  \\ \cline{2-4} 
@@ -67,11 +65,16 @@
 \end{table}
 \end{center}
 
+As a complement to table~\ref{tab:results-grouped}, table~\ref{tab:results-sorted} organizes the experimental results by accuracy, with the most accurate features on top.
+This table gives an idea of the general success of the various features relative to the next most- and next least-accurate feature.
+From this table, it is clear that the best feature is significantly more accurate than any other feature with a value of 9.49\% (the next most accurate is a faraway 3.03\%).
+
 \begin{center}
 \begin{table}[h]
 \caption{Indexing results using 2000 features, sorted by accuracy, descending.}
 \begin{tabular}{llll}
-\textbf{Sensitivity} & \textbf{Feature}       & \textbf{Sampling Technique} & \textbf{Accuracy $\downarrow$} \\ \hline
+\label{tab:results-sorted}
+\textbf{Sensitivity} & \textbf{Primary Feature}       & \textbf{Sampling Technique} & \textbf{Accuracy $\downarrow$} \\ \hline
 Case-insensitive     & Linked article titles  & Most frequent               & 9.49\%             \\ \hline
 Case-insensitive     & In first sentence      & Most frequent               & 3.03\%             \\ \hline
 Case-sensitive       & In first sentence      & Most frequent               & 1.82\%             \\ \hline
@@ -99,3 +102,5 @@ Case-sensitive       & Contains               & Most frequent               & 0.
 \end{tabular}
 \end{table}
 \end{center}
+
+\subsection{Discussion}
