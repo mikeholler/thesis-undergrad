@@ -12,18 +12,163 @@ While each of the 24 feature sets are indeed different, they created from all of
 
 \subsubsection{Case Sensitivity}
 
-\subsubsection{Feature}
+Like most texts, both the text in {\it Biology} and from Wikipedia contain a mix of upper and lowercase letters, known as mixed case.
+When analyzing mixed case text, one must choose whether to preserve the mixed case or normalize the text to one uniform case.
+Choosing to normalize the text means that all analysis that happens will be case-insensitive (case does not matter), and conversely leaving the texts in their original mixed case form means the analysis is case-sensitive (case matters).
+Since case-sensitivity has the power to affect a classifier's results, all feature sets are run twice: once case-sensitively, and again case-insensitively.
+
+\subsubsection{Primary Feature}
+
+When creating a feature set, one must decide the criteria by which individual words are selected as features.
+The primary feature defines how features are discovered in the text, and this research runs trials with four different primary features.
+To make the selection of these features easier to understand, the following slightly modified excerpt from Wikipedia's ``Animal'' article will be used throughout this section as an example of the selection process\footnote{{\bf Bold} text represents a link to another article as seen by a user, whereas the \textsuperscript{\it superscript} text immediately following bold text represents the title of the article being linked to. This title is not seen by the users until they click the bold link text.}
+
+\begin{quote}
+All animals are {\bf heterotrophic beings}\textsuperscript{Heterotroph}, meaning that they feed directly or indirectly on other living things. They are often further subdivided into groups such as {\bf carnivores}\textsuperscript{Carnivore}, {\bf herbivores}\textsuperscript{Herbivore}, {\bf omnivores}\textsuperscript{Omnivore}, and {\bf parasites}\textsuperscript{Parasitic animals}.
+\end{quote}
 
 \subsubsubsection{Contains}
+
+The simplest of all features, the contains feature consists of all the words in the training set.
+The contains feature is suggested in Natural Language Processing with Python and Speech and Language Processing as a simple starting point for creating a feature set\cite{nlpwp,jurafsky}.
+If the above paragraph were processed as training data by a \naive Bayes classifier, every word would be selected\footnote{\underline{Underlines}, both here and throughout this paper, are used to denote feature selection. Each solid underline represents a \underline{single feature}.}
+
+\begin{quote}
+\underline{All} \underline{animals} \underline{are} {\bf \underline{heterotrophic} \underline{beings}}\textsuperscript{Heterotroph}, \underline{meaning} \underline{that} \underline{they} \underline{feed} \underline{directly} \underline{or} \underline{indirectly} \underline{on} \underline{other} \underline{living} \underline{things}. \underline{They} \underline{are} \underline{often} \underline{further} \underline{subdivided} \underline{into} \underline{groups} \underline{such} \underline{as} \underline{\bf carnivores}\textsuperscript{Carnivore}, \underline{\bf herbivores}\textsuperscript{Herbivore}, \underline{\bf omnivores}\textsuperscript{Omnivore}, \underline{and} \underline{\bf parasites}\textsuperscript{Parasitic animals}.
+\end{quote}
+
+From the above paragraph, it intuitively clear that many of the words above, like ``things'', ``other'', ``subdivided'', {\it et al.} are not indicative of the word Enzyme.
+One of the drawbacks of the contains feature is how many unhelpful words make it into the feature set, since literally every word in the training set is its own feature.
+Therefore, it makes sense to try some more restrictive feature sets in addition to testing the contains feature.
+
 \subsubsubsection{In First Sentence}
+
+A summary is similar to an index in that they both attempt to summarize a large amount of text into a very small amount of text, so it seemed like the sources collected {\it Speech and Language Processing} for the topic of automatic extractive summarization might also apply to automatic indexing.
+Both this and the next primary feature are inspired by the section of Jurafsky and Martin's covering supervised selection of content for extractive summarization.
+The section lists several features that can be used to select sentences, ``that are predictive of being a good sentence to appear in a summary''.
+In the list of five possible features for extractive summarization, ``position'' appeared to apply most to both extractive summarization and automatic indexing.
+
+Position of a piece of text inside a document can indicate a sentence that summarizes a larger group of text, as in the case of a topic sentence in a paragraph.
+Research indicates that the first sentence of a paragraph\footnote{Known as the ``topic sentence'' by many.} is usually a good candidate for use in a summary, and therefore is likely to contain terms that indicate a certain index entry\cite{jurafsky}.
+
+The first way this research uses position in text to inform feature selection for automatic indexing is by including every unique word in the first sentence of each paragraph in the training set in the feature set.
+This means the example training paragraph looks like this when the ``in first sentence'' feature is used:
+
+\begin{quote}
+\underline{All} \underline{animals} \underline{are} {\bf \underline{heterotrophic} \underline{beings}}\textsuperscript{Heterotroph}, \underline{meaning} \underline{that} \underline{they} \underline{feed} \underline{directly} \underline{or} \underline{indirectly} \underline{on} \underline{other} \underline{living} \underline{things}. They are often further subdivided into groups such as {\bf carnivores}\textsuperscript{Carnivore}, {\bf herbivores}\textsuperscript{Herbivore}, {\bf omnivores}\textsuperscript{Omnivore}, and {\bf parasites}\textsuperscript{Parasitic animals}.
+\end{quote} 
+
 \subsubsubsection{First Word in Sentence}
+
+Following from the research on position mentioned above, words may instead be selected by including the first word of each sentence in the feature set.
+The inspiration is that many sentences lead off with a proper noun that acts as the topic of the words that follow.
+This phenomena is intuitively apparent in the {\it Biology} training data.
+
+Below, the example excerpt is shown with the first word in each paragraph selected for the feature set.
+Unfortunately, in this case the two words selected (``All'' and ``They'') are not very indicative of either sentence's topic.
+It was predicted that the first word of each sentence would not make for as strong of a feature set as the words in the first sentence of each paragraph.
+
+\begin{quote}
+\underline{All} animals are {\bf heterotrophic beings}\textsuperscript{Heterotroph}, meaning that they feed directly or indirectly on other living things. \underline{They} are often further subdivided into groups such as {\bf carnivores}\textsuperscript{Carnivore}, {\bf herbivores}\textsuperscript{Herbivore}, {\bf omnivores}\textsuperscript{Omnivore}, and {\bf parasites}\textsuperscript{Parasitic animals}.
+\end{quote}
+
 \subsubsubsection{Linked Article Titles}
+\label{subsubsubsec:feature-links}
+
+\begin{quote}
+All animals are {\bf heterotrophic beings}\textsuperscript{\underline{Heterotroph}}, meaning that they feed directly or indirectly on other living things. They are often further subdivided into groups such as {\bf carnivores}\textsuperscript{\underline{Carnivore}}, {\bf herbivores}\textsuperscript{\underline{Herbivore}}, {\bf omnivores}\textsuperscript{\underline{Omnivore}}, and {\bf parasites}\textsuperscript{\underline{Parasitic animals}}.
+\end{quote}
+
+\subsubsection{Feature Sample Size}
+\label{sec:sample-size}
+
+Since the source texts for the training and test sets are so large, applying any one of the primary features listed above generates a large number of features.
+When applying the contains feature, for example, the feature processor found 51,261 unique words in the training set.
+A number this large would not seem to be a problem for computers today, however in writing the classifier it was discovered that every 2,000 features requires 1.6 gigabytes of memory in order to run adds approximately 30 minutes to the classifier's runtime.
+With 51,261 features to select for a case-sensitive contains feature set, the classifier would require approximately 40 gigabytes of memory and would run for over 10 hours before producing a result.
+For the modern commodity computers this research had access to---and the desire for breadth of results---these requirements were considered too large.
+To reduce the memory and time requirements, the cardinality of the feature sets were reduced to 2,000, what was considered an acceptable number based on the resources available. 
+
+When reducing a feature set, the criteria used to keep and remove features affect the results of the classifier.
+In the next section, different techniques for selecting a subset of features are discussed.
 
 \subsubsection{Feature Sampling Technique}
 
-\subsubsection{Feature Sample Size}
+When selecting a sample of features to be used from a larger population of features, care must be taken to select only the most useful features.
+Usefulness is difficult to determine directly, so one must use indirect methods to mark features for selection.
+One way to select features is by looking at how frequently each feature occurs in the training set relative to other features.
+Frequency distributions are used to sort features by how frequently they occur.
+After this step, features can be selected from the frequency distribution by frequency.
+Specifically, this research extracts three groups of features from this distribution:
+
+\begin{itemize}
+\item 2,000 most frequently occurring features
+\item 2,000 least frequently occurring features
+\item 2,000 randomly selected features
+\end{itemize}
+
+The group of randomly selected features was included as a control for the most and least frequently occurring features, since random selection would create a subset of features most representative of the original set.
 
 \subsection{Conducting the Experiment}
+
+After gathering the data and establishing the different feature characteristic combinations that will be tested, the next step was writing the classifier and means of testing it.
+After the classifier was written, it was installed on a number of computers and run with all 24 unique combinations of feature characteristics listed below in table~\ref{tab:feature-characteristics}. 
+
+\begin{center}
+\begin{table}[H]
+\begin{minipage}[t]{.33\linewidth}
+\vspace{0pt}
+\centering
+\begin{tabular}{l}
+\textbf{Case-Sensitivity} \\
+\hline
+Case-sensitive \\
+Case-insensitive \\
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{.33\linewidth}
+\vspace{0pt}
+\centering
+\begin{tabular}{l}
+\textbf{Primary Feature} \\
+\hline
+Contains \\
+In first sentence \\
+First word in sentence \\
+Linked article titles \\
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{.33\linewidth}
+\vspace{0pt}
+\centering
+\begin{tabular}{l}
+\textbf{Sampling Technique} \\
+\hline
+Most frequent \\
+Least frequent \\
+Random \\
+\end{tabular}
+\end{minipage}
+\caption{Comprehensive list of feature characters being used.\label{tab:feature-characteristics}}
+\end{table}
+\end{center}
+
+\subsubsection{Writing the Classifier}
+
+The classifier is implemented in Python and uses the Natural Language Toolkit library (discussed in section~\ref{sec:nltk}).
+classifier.py takes the inputs of a directory containing plain text Wikipedia articles extracted in section~\ref{subsubsec:RDB2F}, the directory of plain text {\it Biology} paragraphs (\ref{sec:training-files}), rankedTitles.txt (\ref{sec:ranked-titles}) and the indexToWiki.json map of index labels to Wikipedia page titles (\ref{sec:indexToWiki}).
+With these inputs, the script trains a \naive Bayes classifier (imported from NLTK) using the combination of feature characteristics is is configured to use at the bottom of the program file.
+Once trained, the program tests the classifier against the {\it Biology} test set.
+Once testing is complete, the program outputs the combination of feature characteristics used to create the feature set, followed by a fractional percentage representing the classifier's accuracy using NLTK's {\it classify} module and the test set.
+The code for classifier.py is reproduced in appendix~\ref{appendix:b}.
+
+\subsubsection{Running the Classifier}
+
+The classifier was run on twelve commodity HP computers with 64-bit Windows 7, Intel i7 processors, and 4 gigabytes of memory installed.
+A zip file containing classifier.py, plain text Wikipedia data, plain text {\it Biology} data, indexToWiki.json, and rankedTitles.txt was copied twice onto each of the two computers.
+Each copy of the classifier was then configured to use a unique combination of feature characteristics defining the contents of the feature set.
+Finally, both copies of classify.py were ran simultaneously on each computer, taking advantage of the processors' multiple cores.
+When each process completed execution, the terminated process's feature characteristics and accuracy were noted in a spreadsheet.
 
 \subsection{Experimental Results and Discussion}
 
