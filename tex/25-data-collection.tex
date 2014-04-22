@@ -9,7 +9,7 @@ This research takes test and training set data from two different, mutually excl
 The training set is composed of paragraphs from Wikipedia articles, with each paragraph labeled by the title of the article it belongs to.
 The test data contain paragraphs from the OpenStax {\it Biology} textbook\cite{biology}, with each paragraph labeled by the index entry that refers to it\footnote{If a {\it Biology} paragraph is not referenced in the index, it is not included in the data set. If it is referenced by multiple index entries, the paragraph is included once per index entry.}
 
-Due to the sheer size of Wikipedia and the memory and computational power available for this research, the data set was reduced by selecting only paragraphs from Wikipedia articles whose title matched in index entry in {\it Biology}.
+Due to the sheer size of Wikipedia and the memory and computational power available for this research, the data set was reduced by selecting only paragraphs from Wikipedia articles whose title matched an index entry in {\it Biology}.
 Likewise, this research makes an assumption that the set of all reasonable index entries for any textbook is the same as the set of all titles in the English Wikipedia.
 This assumption lends itself to selecting only paragraphs from {\it Biology} whose labels are the same as Wikipedia article titles.
 
@@ -46,226 +46,6 @@ Figure~\ref{fig:pipeline} visually depicts the pipeline described above.
 \end{center}
 \end{figure}
 
-\subsection{Test Set}
-\label{subsec:test-set}
-
-Since the goal of this research is to create an index for a book, the test set is generated from a textbook with a comprehensive index section.
-This textbook is called {\it Biology} \cite{biology}, and is freely available from OpenStax \cite{openstax-bio} under the Creative Commons Attribution license.
-The book was created by six senior contributors that hold professorial positions at prevalent universities, and approximates an average college textbook.
-This textbook is 1477 pages long, containing an index of 3118 unique topics (labels) making for 4678 different index entries (references).
-
-In {\it Biology}, all words referred to by index entries are bolded in the text itself. Below is an example of what this looks like (bold in original):
-
-\begin{quote}
-Symbiotic relationships, or {\bf symbioses} (plural), are close interactions between individuals of different species over an extended period of time which impact the abundance and distribution of the associating populations. \cite{biology}
-\end{quote}
-
-\noindent Here, the bold word ``symbioses'' is referred to by an index entry at the back of the book with the same name. All index entries point to bold words, and all bold words point to index entries. This fact makes it trivial to find which part of the page an index reference is referring to, making it a good candidate for test data.
-
-\subsubsection{Structuring the Test Data}
-
-Useful though {\it Biology} is as a data source, it is not available in a structured, easily parsable format.
-In order to make the data in {\it Biology} usable, it needs to be converted from its source PDF into a structured form.
-A relational database is used to store the book's text so that it can be queried for its contents, paragraph location, page number, and other helpful attributes.
-
-\subsubsection{Importing Index Entries into Relational Database}
-
-To expedite the structuring process, text was copied manually from the PDF, and pasted into a plain text document.
-Regular expressions were used to massage the data into a simple, comma separated format.
-In this format, each line represents a unique index entry, with the first column in a line holding the index label (or name), and each subsequent column holds a page number the label can be found on.
-Now that the data are more easily parsable, there must be a way to it in a relational database for analysis purposes.
-
-A table is created to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
-In this table, indexId is an autoincrementing ID, label is the name of the index entry as it appears in the book (e.g., ``Acid rain''), and wikiLabel is the label if the label were a wikipedia article name (e.g., ``Acid\_rain'') which is achieved by replacing spaces in the label with underscores.
-
-\begin{center}
-\begin{tabular}{|c|}
-\hline 
-\textbf{index} \\ 
-\hline 
-bookId \\ 
-\hline 
-indexId \\ 
-\hline 
-label \\ 
-\hline 
-wikiLabel \\ 
-\hline 
-\end{tabular}
-\end{center}
- 
-An indexedPage table was created to store index references (page numbers) that belong to index labels.
-This table simply contains an indexId and a pageNum, which allows for joins onto the index table to replicate the whole index.
-
-\begin{center}
-\begin{tabular}{|c|}
-\hline 
-\textbf{indexedPage} \\ 
-\hline 
-indexId \\ 
-\hline 
-pageNum \\ 
-\hline 
-\end{tabular} 
-\end{center}
-
-Once these tables were created, the structured CSV file was imported using the custom indexImporter.php (see Appendix B) tool written specifically for this purpose.
-
-The importer script populates all of the columns in both tables with all of the data in the CSV file.
-
-\subsubsection{Reducing Index Entry Set}
-\label{subsec:reducing}
-
-Only index entries whose {\tt wikiLabel} value matches a Wikipedia article title will be used in this research.
-This means that information need only be gathered from index entries that match this criteria.
-To discover this subset of index entries, a database of Wikipedia titles must be intersected with the {\tt index}.
-
-The Wikimedia Foundation periodically creates dumps for their many databases and makes them publically available online\cite{wiki-dumps}.
-One of the many data sets they make available is a list of Wikipedia article titles in the main \url{/wiki/} namespace for the English language version of Wikipedia\cite{wiki-dump-titles}.
-At the time of this writing, there are 10639771 separate Wikipedia article titles matching this criteria.
-This dump will serve as the source that will ultimately be intersected with the {\it Biology} index entries to yield the entries that will be used in analyses.
-
-Before performing this intersection, the English Wikipedia title information must be extracted from the dump file and placed in a table in the relational database.
-This table contains a unique {\tt titleId} integer key and a textual {\tt title} in each row.
-
-\begin{center}
-\begin{tabular}{|c|}
-\hline 
-{\bf articleTitles} \\ 
-\hline 
-titleId \\ 
-\hline 
-title \\ 
-\hline 
-\end{tabular} 
-\end{center}
-
-This data is imported into the {\tt articleTitles} table using the {\tt titleImporter.php} script (see Appendix C).
-Now that both the index labels and article titles exist in the relational database, the two datasets can be intersected by running the following MySQL command, where {\tt BINARY} requires case sensitive matching:
-
-\begin{lstlisting}[language=SQL]
-SELECT i.wikiLabel
-    FROM `index` i, `articleTitles` at
-    WHERE BINARY i.wikiLabel = at.title;
-\end{lstlisting}
-
-The 3118 unique index labels intersected against all 10639771 Wikipedia articles yields a total number of 518 overlapping terms.
-This number would be larger, however all Wikipedia titles begin with a capital letter, and since this was a {\tt BINARY} exact case match all index lables with lowercase initial letters were excluded from the intersection.
-This does not seem to introduce a bias towards proper nouns, however, as {\it Biology}'s index contains words and phrases exactly as they appear in the text.
-Below is a random sampling of 15 labels from the intersection as they appear in {\it Biology}'s index.
-Notice how very few of these labels are proper nouns.
-
-\begin{multicols}{3}
-\begin{verbatim}
-Bacteriophages
-Chordata
-Elevation
-Exotic species
-FtsZ
-Heritability
-Phloem
-Pongo
-RNAs
-Runners
-Schwann cell
-S-layer
-Southern blotting
-Sutural bones
-Topoisomerase
-\end{verbatim}
-\end{multicols}
-
-\subsubsection{Storing the Indexed Text}
-
-Now that the relevant set of index labels have been ascertained, the context in which these labels appear in {\it Biology}'s text must be stored.
-As mentioned above, this research defines an index entry's context as the paragraph the indexed word appears in.
-In the relational database, two tables exist to hold this information:
-
-\begin{center}
-\begin{tabular}{|c|}
-\hline 
-\textbf{paragraph} \\ 
-\hline 
-paraNum \\ 
-\hline 
-bookId \\ 
-\hline 
-pageNum \\ 
-\hline 
-endPageNum \\ 
-\hline 
-body \\ 
-\hline 
-\end{tabular}
-\end{center}
-
-\begin{center}
-\begin{tabular}{|c|}
-\hline 
-\textbf{indexedParagraph} \\ 
-\hline 
-indexId \\ 
-\hline 
-paraNum \\ 
-\hline 
-\end{tabular} 
-\end{center}
-
-The contents of a paragraph are stored in the {\tt paragraph} table's body, along with information about the paragraph's location.
-{\tt pageNum} and {\tt endPageNum} specify the pages on which the paragraph starts and ends, since a paragraph may continue onto another page.
-
-To associate these paragraphs with the index labels in the {\tt index} table, the {\tt indexedParagraph} table was creted.
-This lookup table specifies a many to many relationship between {\tt paragraph} and {\tt index}, since an index entry refers to at least one paragraph, and a paragraph may contain zero or more index references. Once these tables are created, it's time to create the indexed
-
-\subsubsection{Collecting the Indexed Text}
-
-The paragraphs were imported into the relational database using paragraphImporter.php, a small webpage script written specifically for this purpose, allowing a researcher to copy a paragraph into a textbox on that page and fill in the meta data for that paragraph and keep track of the index entries that point to it.
-
-As mentioned above, {\it Biology} comes in PDF form, making it difficult for a computer to parse the individual paragraphs out.
-By using the SQL query below, a list of index entries with the pages on which they appear.
-
-\begin{lstlisting}
-SELECT DISTINCT ip.pageNum, i.`label`
-    FROM thesis.`index` i,
-         thesis.indexToWiki iw,
-         thesis.indexedPage ip
-    WHERE BINARY i.`label` = iw.indexTitle
-        AND ip.indexId = i.indexId
-        ORDER BY ip.pageNum ASC;
-\end{lstlisting}
-
-This list is used to guide data entry, since it contains only the index references which are relevant for this research.
-Here is an example of what this list looks like:
-
-\begin{multicols}{2}
-\begin{verbatim}
-14,Science
-16,"Deductive reasoning"
-16,"Inductive reasoning"
-20,"Basic science"
-23,"Review articles"
-27,Organs
-27,Prokaryotes
-28,Organisms
-32,Microbiology
-33,Zoology
-\end{verbatim}
-\end{multicols}
-
-Using this list and a PDF viewer, a paragraph is located that corresponds to each line, the text is selected using the cursor, and copied from the PDF to paragraphImporter.php.
-Finding which paragraph on a page corresponds to a given index label is a trivial task, as the label always appears bolded in the paragraph it belongs to.
-
-\subsubsection{Relational Database to Files}
-\label{subsubsec:RDB2F}
-
-This research uses Python's Natural Language Toolkit (NLTK) library for analysis \cite{nltk}.
-With NLTK, it is easier to work with raw files without interacting with a database.
-In order to do this, the content that was inserted into the database in the above step needs to be extracted.
-The extraction is acomplished using saveIndexParagraphs.php, a script which connects to the database and places paragraphs in files named by their respective index labels.
-All of the paragraphs a label refers to are appended to the same file, using two newline characters ({\tt{\textbackslash}n{\textbackslash}n}) as a delimiter between paragraphs.
-It is also important to note that a paragraph will be placed in multiple files if multiple labels refer to it.
-Now the test set is considered processed, it is time to move on to the training set.
-
 \subsection{Training Set}
 \label{subsec:training-set}
 
@@ -274,7 +54,7 @@ Since this list contains only titles, the contents of the article need to be fet
 
 \subsubsection{Downloading the Training Data}
 
-Since there are 518 articles to fetch from Wikipedia, downloading each one by one would take time and go against Wikipedia's terms of service. Wikipedia does not allow the use of automated web crawlers when it can be avoided\cite{wiki-robots}.
+Since there are 518 articles to fetch from Wikipedia, downloading each one-by-one would take time and go against Wikipedia's terms of service. Wikipedia does not allow the use of automated web crawlers when it can be avoided\cite{wiki-robots}.
 
 Instead, the articles were fetched using the Wikipedia page exporter \cite{wiki-exporter}, which produces an XML database dump file.
 This file contains the contents for all of the articles specified in the web form, plus extra information about the article like title and date of last edit.
@@ -397,6 +177,226 @@ An example of this is shown in a piece of HTML excerpted from the Biology articl
 \end{lstlisting}
 \noindent For the purpose of this research, it is the contents of the title attribute that need to be extracted and ranked by most frequently linked.
 These titles were pulled from the ``a'' link elements in the HTML versions of the Wikipedia pages mentioned in section~\ref{sec:html-pages} by using extractPageLinks.py to generate a rankedTitles.txt file.
+
+\subsection{Test Set}
+\label{subsec:test-set}
+
+Since the goal of this research is to create an index for a book, the test set is generated from a textbook with a comprehensive index section.
+This textbook is called {\it Biology} \cite{biology}, and is freely available from OpenStax \cite{openstax-bio} under the Creative Commons Attribution license.
+The book was created by six senior contributors that hold professorial positions at prevalent universities, and approximates an average college textbook.
+This textbook is 1477 pages long, containing an index of 3118 unique topics (labels) making for 4678 different index entries (references).
+
+In {\it Biology}, all words referred to by index entries are bolded in the text itself. Below is an example of what this looks like (bold in original):
+
+\begin{quote}
+Symbiotic relationships, or {\bf symbioses} (plural), are close interactions between individuals of different species over an extended period of time which impact the abundance and distribution of the associating populations. \cite{biology}
+\end{quote}
+
+\noindent Here, the bold word ``symbioses'' is referred to by an index entry at the back of the book with the same name. All index entries point to bold words, and all bold words point to index entries. This fact makes it trivial to find which part of the page an index reference is referring to, making it a good candidate for test data.
+
+\subsubsection{Structuring the Test Data}
+
+Useful though {\it Biology} is as a data source, it is not available in a structured, easily parsable format.
+In order to make the data in {\it Biology} usable, it needs to be converted from its source PDF into a structured form.
+A relational database is used to store the book's text so that it can be queried for its contents, paragraph location, page number, and other helpful attributes.
+
+\subsubsection{Importing Index Entries into Relational Database}
+
+To expedite the structuring process, text was copied manually from the PDF, and pasted into a plain text document.
+Regular expressions were used to massage the data into a simple, comma separated format.
+In this format, each line represents a unique index entry, with the first column in a line holding the index label (or name), and each subsequent column holds a page number the label can be found on.
+Now that the data are more easily parsable, there must be a way to it in a relational database for analysis purposes.
+
+A table is created to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
+In this table, indexId is an autoincrementing ID, label is the name of the index entry as it appears in the book (e.g., ``Acid rain''), and wikiLabel is the label if the label were a wikipedia article name (e.g., ``Acid\_rain'') which is achieved by replacing spaces in the label with underscores.
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+\textbf{index} \\ 
+\hline 
+bookId \\ 
+\hline 
+indexId \\ 
+\hline 
+label \\ 
+\hline 
+wikiLabel \\ 
+\hline 
+\end{tabular}
+\end{center}
+ 
+An indexedPage table was created to store index references (page numbers) that belong to index labels.
+This table simply contains an indexId and a pageNum, which allows for joins onto the index table to replicate the whole index.
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+\textbf{indexedPage} \\ 
+\hline 
+indexId \\ 
+\hline 
+pageNum \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
+Once these tables were created, the structured CSV file was imported using the custom indexImporter.php (see Appendix B) tool written specifically for this purpose.
+
+The importer script populates all of the columns in both tables with all of the data in the CSV file.
+
+\subsubsection{Reducing Index Entry Set}
+\label{subsec:reducing}
+
+Only index entries whose {\tt wikiLabel} value matches a Wikipedia article title will be used in this research.
+This means that information need only be gathered from index entries that match this criteria.
+To discover this subset of index entries, a database of Wikipedia titles must be intersected with the {\tt index}.
+
+The Wikimedia Foundation periodically creates dumps for their many databases and makes them publicly available online\cite{wiki-dumps}.
+One of the many data sets they make available is a list of Wikipedia article titles in the main \url{/wiki/} namespace for the English language version of Wikipedia\cite{wiki-dump-titles}.
+At the time of this writing, there are 10639771 separate Wikipedia article titles matching this criteria.
+This dump will serve as the source that will ultimately be intersected with the {\it Biology} index entries to yield the entries that will be used in analyses.
+
+Before performing this intersection, the English Wikipedia title information must be extracted from the dump file and placed in a table in the relational database.
+This table contains a unique {\tt titleId} integer key and a textual {\tt title} in each row.
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+{\bf articleTitles} \\ 
+\hline 
+titleId \\ 
+\hline 
+title \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
+This data is imported into the {\tt articleTitles} table using the {\tt titleImporter.php} script (see Appendix C).
+Now that both the index labels and article titles exist in the relational database, the two datasets can be intersected by running the following MySQL command, where {\tt BINARY} requires case sensitive matching:
+
+\begin{lstlisting}[language=SQL]
+SELECT i.wikiLabel
+    FROM `index` i, `articleTitles` at
+    WHERE BINARY i.wikiLabel = at.title;
+\end{lstlisting}
+
+The 3118 unique index labels intersected against all 10639771 Wikipedia articles yields a total number of 518 overlapping terms.
+This number would be larger, however all Wikipedia titles begin with a capital letter, and since this was a {\tt BINARY} exact case match all index labels with lowercase initial letters were excluded from the intersection.
+This does not seem to introduce a bias towards proper nouns, however, as {\it Biology}'s index contains words and phrases exactly as they appear in the text.
+Below is a random sampling of 15 labels from the intersection as they appear in {\it Biology}'s index.
+Notice how very few of these labels are proper nouns.
+
+\begin{multicols}{3}
+\begin{verbatim}
+Bacteriophages
+Chordata
+Elevation
+Exotic species
+FtsZ
+Heritability
+Phloem
+Pongo
+RNAs
+Runners
+Schwann cell
+S-layer
+Southern blotting
+Sutural bones
+Topoisomerase
+\end{verbatim}
+\end{multicols}
+
+\subsubsection{Storing the Indexed Text}
+
+Now that the relevant set of index labels have been ascertained, the context in which these labels appear in {\it Biology}'s text must be stored.
+As mentioned above, this research defines an index entry's context as the paragraph the indexed word appears in.
+In the relational database, two tables exist to hold this information:
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+\textbf{paragraph} \\ 
+\hline 
+paraNum \\ 
+\hline 
+bookId \\ 
+\hline 
+pageNum \\ 
+\hline 
+endPageNum \\ 
+\hline 
+body \\ 
+\hline 
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline 
+\textbf{indexedParagraph} \\ 
+\hline 
+indexId \\ 
+\hline 
+paraNum \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
+The contents of a paragraph are stored in the {\tt paragraph} table's body, along with information about the paragraph's location.
+{\tt pageNum} and {\tt endPageNum} specify the pages on which the paragraph starts and ends, since a paragraph may continue onto another page.
+
+To associate these paragraphs with the index labels in the {\tt index} table, the {\tt indexedParagraph} table was creted.
+This lookup table specifies a many to many relationship between {\tt paragraph} and {\tt index}, since an index entry refers to at least one paragraph, and a paragraph may contain zero or more index references. Once these tables are created, it's time to create the indexed
+
+\subsubsection{Collecting the Indexed Text}
+
+The paragraphs were imported into the relational database using paragraphImporter.php, a small webpage script written specifically for this purpose, allowing a researcher to copy a paragraph into a textbox on that page and fill in the meta data for that paragraph and keep track of the index entries that point to it.
+
+As mentioned above, {\it Biology} comes in PDF form, making it difficult for a computer to parse the individual paragraphs out.
+By using the SQL query below, a list of index entries with the pages on which they appear.
+
+\begin{lstlisting}
+SELECT DISTINCT ip.pageNum, i.`label`
+    FROM thesis.`index` i,
+         thesis.indexToWiki iw,
+         thesis.indexedPage ip
+    WHERE BINARY i.`label` = iw.indexTitle
+        AND ip.indexId = i.indexId
+        ORDER BY ip.pageNum ASC;
+\end{lstlisting}
+
+This list is used to guide data entry, since it contains only the index references which are relevant for this research.
+Here is an example of what this list looks like:
+
+\begin{multicols}{2}
+\begin{verbatim}
+14,Science
+16,"Deductive reasoning"
+16,"Inductive reasoning"
+20,"Basic science"
+23,"Review articles"
+27,Organs
+27,Prokaryotes
+28,Organisms
+32,Microbiology
+33,Zoology
+\end{verbatim}
+\end{multicols}
+
+Using this list and a PDF viewer, a paragraph is located that corresponds to each line, the text is selected using the cursor, and copied from the PDF to paragraphImporter.php.
+Finding which paragraph on a page corresponds to a given index label is a trivial task, as the label always appears bolded in the paragraph it belongs to.
+
+\subsubsection{Relational Database to Files}
+\label{subsubsec:RDB2F}
+
+This research uses Python's Natural Language Toolkit (NLTK) library for analysis \cite{nltk}.
+With NLTK, it is easier to work with raw files without interacting with a database.
+In order to do this, the content that was inserted into the database in the above step needs to be extracted.
+The extraction is acomplished using saveIndexParagraphs.php, a script which connects to the database and places paragraphs in files named by their respective index labels.
+All of the paragraphs a label refers to are appended to the same file, using two newline characters ({\tt{\textbackslash}n{\textbackslash}n}) as a delimiter between paragraphs.
+It is also important to note that a paragraph will be placed in multiple files if multiple labels refer to it.
+Now the test set is considered processed, it is time to move on to the training set.
 
 \subsection{Mapping the Training Set to the Test Set}
 \label{sec:indexToWiki}
