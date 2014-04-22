@@ -1,1 +1,28 @@
 \section{Conclusion}
+
+This research attempts to create a automatic indexer that can recreate the text of a college Biology textbook using a \naive Bayes processor trained on a collection of Biology-based Wikipedia articles and tested with twenty-four unique feature sets.
+The automatic indexer is measured in terms of accuracy, which is defined as the percentage of index terms that are shared between the original index and the blind attempt to recreate the original index from the source text.
+The gold standard for indexing accuracy is 30\%, defined from Korycinski and Newell\cite{automatic-indexing}.
+Although this research was unable to reach human levels of indexing accuracy, it did achieve a respectable 9.49\% accuracy from one of the twenty-four tested feature sets.
+
+The most accurate feature set was created using the 2000 most frequently linked articles' titles from the Wikipedia training data.
+Since this study focused on testing a breadth of different feature sets, the nuances of the more successful feature sets were left unexplored for lack of time.
+More research on optimizing this feature set should be done, perhaps by eliminating stop words, using a different type of supervised classification, or changing the sample size of the feature set (which was locked at 2000 for each of the twenty-four trials).
+
+In addition to the sub-optimal accuracy, there are a few overall flaws with using a \naive Bayes classifier---or any document classifier---for automatic indexing.
+Document classifiers like the one used for this research are required to label each document once and only once.
+This becomes an issue not only when an input paragraph, or document, should {\it not} have an index label, but also when it should have more than one.
+After all, not every paragraph of a human-indexed book will have an index entry that points to it.
+This forced assignment might be eliminated the classifier is made to consult a heuristic threshold, where everything above the threshold likelihood must be an index entry, and if nothing is above it, it does not get labeled.
+
+Two further difficulties with the use of classifiers in automatic indexing are the memory and time requirements.
+Ideally, an automatic indexer would be generalized to index a textbook of any kind, instead of being specifically created to index a particular book, as shown in this research.
+Even with the specifically created classifier used in this study took a surprising amount of space and time considering the relatively small number of features in the feature set.
+Once automatic indexers based on document classifiers are made more efficient and accurate, publishers might still have to create many automatic indexers for many different subjects\footnote{E.g., a textbook company might have automatic indexers for Biology, Classics, and Computer Science books.} in order to limit the amount of memory and time the program needs to run without sacrificing accuracy.
+These specialized indexers could share the same feature set generation algorithm, but vary by training on different categories of Wikipedia articles.
+
+Overall, this research confirms that the \naive Bayes classifier seems to be a good candidate for automatic indexing, so long as one can accept the current limitations of the algorithm.
+Although this experiment failed to achieve human results, it did get appreciably close enough to warrant additional research and improvement.
+Nancy Mulvany, professional indexer and author of {\it Indexing Books} confidently writes, ``There is nothing automatic about the index-writing process.
+There is no automatic indexing tool available that could produce the index in the back of this book,''\cite{mulvany}.
+Mulvany is still correct in her statement, but with the continuing advancement of technology and the gradual improvement of Natural Language Processing techniques, the day is coming when her statement might be falsified.

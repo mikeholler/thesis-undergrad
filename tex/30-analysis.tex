@@ -59,6 +59,7 @@ This means the example training paragraph looks like this when the ``in first se
 \end{quote} 
 
 \subsubsubsection{First Word in Sentence}
+\label{sec:first-word}
 
 Following from the research on position mentioned above, words may instead be selected by including the first word of each sentence in the feature set.
 The inspiration is that many sentences lead off with a proper noun that acts as the topic of the words that follow.
@@ -75,9 +76,30 @@ It was predicted that the first word of each sentence would not make for as stro
 \subsubsubsection{Linked Article Titles}
 \label{subsubsubsec:feature-links}
 
+The above three primary features, while presumed useful, do not make any specific use of the meta data provided by the unique Wikipedia data set.
+One of the defining characteristics of a Wikipedia page is the set of textual links, defined by the article's editor(s) to other Wikipedia pages.
+These links to other pages are typically only on words that are relevant to the given topic.
+E.g., no editor would link to the Wikipedia page on the word ``the'' in an article about beekeeping, but they might link to an article on ``Mesopotamia'', one of the earliest beekeeping civilizations in human history.
+This is because the links' purpose is to give background information to readers that will help them understand a concept related to the article they are reading.
+
+Since most---if not all---of the links in Wikipedia are used to provide background information and show relations to other topics, it would seem possible to effectively use the links for developing a supervised classifier.
+This research uses this data to create a primary feature by pre-processing the Wikipedia training set, gathering all of the intra-Wiki links using the method described in section~\ref{sec:ranked-titles}, and storing them in a file by most-recent title first.
+These titles are used in a {\it contains(title)} feature, where the feature processor records which of the titles a particular article has in text.
+
+For example, the following text would be pre-processed and the words ``Heterotroph'', ``Carnivore'', ``Herbivore'', ``Omnivore'', and ``Parasitic animals'' would appear in the feature set.
+When this same text is processed by the feature processor in the training set, the processor checks whether the text contains any of these five words, in addition to the other words in the feature set.
+The processor would find ``Heterotroph'', since the word is inside ``{\bf heterotroph}ic beings'', and it would likewise find ``Carnivore'', ``Herbivore'', and ``Omnivore''.
+However, it would not find ``parasites'', because the title of the article the word happens to link to is ``Parasitic animals'', and the latter string of text is nowhere to be found in the original source.
+The feature processor cannot look at the title of the article linked to in this excerpt because the test set does not contain links like this, and the feature processor must perform the same work on both sets.
+
 \begin{quote}
 All animals are {\bf heterotrophic beings}\textsuperscript{\underline{Heterotroph}}, meaning that they feed directly or indirectly on other living things. They are often further subdivided into groups such as {\bf carnivores}\textsuperscript{\underline{Carnivore}}, {\bf herbivores}\textsuperscript{\underline{Herbivore}}, {\bf omnivores}\textsuperscript{\underline{Omnivore}}, and {\bf parasites}\textsuperscript{\underline{Parasitic animals}}.
 \end{quote}
+
+In general, it is hypothesized that this feature will have the best results of all other primary features.
+This is because the feature set using this primary feature will contain key concepts and themes relating more directly to the various labels than a simple ``contains feature''.
+This is also the only primary feature that allows for multi-word features (see ``Parasitic animals'' above).
+It is predicted that this feature will perform best when using a case-insensitive mapping, since all Wikipedia titles begin with a capital letter and the only capital words in either the training or tests sets are words at the beginning of sentences and/or proper nouns.
 
 \subsubsection{Feature Sample Size}
 \label{sec:sample-size}
@@ -174,8 +196,29 @@ When each process completed execution, the terminated process's feature characte
 
 The experiment's 24 trials are summarized by the two tables below.
 Both tables contain the same results, but they are presented in two different ways to aid understanding.
-Table~\ref{tab:results-grouped} presents the experiment's results grouped by feature characteristic, making it possible to easily locate and compare the effectiveness between features with many similar characteristics.
-% More about the table here, and particularly what is interesting about it.
+Table~\ref{tab:results-grouped} presents the experiment's results grouped by feature characteristic, making it possible to easily locate and compare the effectiveness between features with many similar feature characteristics.
+
+The table shows, that generally, case-insensitive matches are more accurate than case-sensitive matches (by about double).
+The best case-sensitive feature combines the {\it most frequent} and {\it in first sentence} feature characteristics, while the best case-insensitive feature (and best overall feature) combines {\it linked article titles} and {\it most frequent}.
+The table also shows that a simple contains feature yields the worst results of all primary features, with a peak of 0.40\% accuracy when it is used in combination both the {\it random} and {\it case-insensitive} feature characteristics.
+This is to be expected, since the other three primary features use heuristics to select only individual features that are more likely to have relevance to the entire paragraph than a random word in the text.
+
+As a complement to table~\ref{tab:results-grouped}, table~\ref{tab:results-sorted} organizes the experimental results by accuracy, with the most accurate features on top.
+This table gives an idea of the general success of the various features relative to the next most- and next least-accurate feature.
+From this table, it is clear that the best feature is significantly more accurate than any other feature with an accuracy of 9.49\%.
+Since humans reach an indexing accuracy of 30\%\cite{automatic-indexing}, these results are less then desirable, but they are a good start.
+The next best method is {\it case-insensitive, in first sentence, most frequent} at a faraway 3.03\%.
+After the top two, the two case-sensitive versions of these features follow at 1.21\% and 1.82\% respectively.
+
+Visibly, table~\ref{tab:results-sorted} also reveals a trend in sampling technique that is worthy of discussion.
+The table lists most frequent as almost unanimously the most effective sampling technique, with all but two of the features using the {\it most frequent} feature characteristic at the top of the table.
+The other two features using {\it most frequent} are at the bottom of the table, but these features both use the relatively unreliable {\it contains} primary feature.
+{\it Most frequent} was probably the worst of the feature using {\it contains} because stop words\footnote{Stop words are words that, while important for grammar, are largely irrelevant to the document. These are words like ``the'', ``and'', and ``have''.} were not removed for this research, meaning the {\it most-frequent contains} feature likely included a large number of stop words within the 2000 feature used.
+
+Like {\it contains}, {\it first word in sentence} appears largely ineffective with a peak accuracy of 0.61\% in case-sensitive and case-insensitive {\it most frequent}.
+Given the example provided in section~\ref{sec:first-word}, this is not entirely surprising.
+Even though the sentences in the {\it Biology} data set frequently begin with informative words, the same does not appear to have held true for the Wikipedia data set.
+This is a consequence of using training and test sets from different sources---the writing style is not always similar between the two sets.
 
 \begin{center}
 \begin{table}[h]
@@ -210,13 +253,6 @@ Table~\ref{tab:results-grouped} presents the experiment's results grouped by fea
 \end{table}
 \end{center}
 
-As a complement to table~\ref{tab:results-grouped}, table~\ref{tab:results-sorted} organizes the experimental results by accuracy, with the most accurate features on top.
-This table gives an idea of the general success of the various features relative to the next most- and next least-accurate feature.
-From this table, it is clear that the best feature is significantly more accurate than any other feature with a value of 9.49\% (the next most accurate is a faraway 3.03\%).
-
-% High dropoff from highest to lowest feature
-% Discuss trend of most frequent dominant -> random -> least frequent
-
 \begin{center}
 \begin{table}[h]
 \caption{Indexing results using 2000 features, sorted by accuracy, descending.}
@@ -249,4 +285,11 @@ Case-insensitive     & Contains               & Most frequent               & 0.
 Case-sensitive       & Contains               & Most frequent               & 0.13\%             \\ \hline
 \end{tabular}
 \end{table}
-\end{center}
+\end{center}%0.48 %1.0
+
+
+
+
+% High dropoff from highest to lowest feature
+% Discuss trend of most frequent dominant -> random -> least frequent
+
