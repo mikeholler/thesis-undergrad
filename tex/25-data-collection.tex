@@ -4,7 +4,7 @@
 This research leverages supervised learning algorithms, meaning it requires a training set and a test set to develop an appropriate feature set to use in conjunction with the supervised learning algorithm.
 The training set allows the algorithm to ``learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
 
-Classically, training and test data come from the same corpus, the same set of data\cite{jurafsky}.
+Generally, training and test data come from the same corpus, the same set of data\cite{jurafsky}.
 This research takes test and training set data from two different, mutually exclusive corpora.
 The training set is composed of paragraphs from Wikipedia articles, with each paragraph labeled by the title of the article it belongs to.
 The test data contain paragraphs from the OpenStax {\it Biology} textbook\cite{biology}, with each paragraph labeled by the index entry that refers to it\footnote{If a {\it Biology} paragraph is not referenced in the index, it is not included in the data set. If it is referenced by multiple index entries, the paragraph is included once per index entry.}
@@ -64,7 +64,7 @@ Using the page exporter makes it possible to circumvent Wikipedia's rules about 
 
 Wikipedia content editors must use the MediaWiki language to edit pages. 
 While MediaWiki is great for writing and editing content, it is difficult for computers to directly query text written in the language.
-To solve this problem, the MediaWiki format must be converted to HTML.
+To solve this problem, the MediaWiki format may be converted to HTML.
 HTML has the useful {\tt <p>} tag, which is used to distinguish paragraphs from one another, a requirement for this research. 
 Unfortunately, the only full-featured MediaWiki to HTML converter is part of the MediaWiki platform itself.
 A computer must be made into a mini-Wikipedia by installing MediaWiki on it and importing data exported from Wikipedia itself.
@@ -75,8 +75,8 @@ To convert articles to HTML, a local MediaWiki server was installed on a persona
 This mini-Wikipedia can then be crawled using printPageLinks.py to extract and store the HTML versions of the articles.
 
 After installation, all available first-party MediaWiki plugins were enabled in the installation, as Wikipedia uses many of them on their own MediaWiki installation.
-Once installed, the database import tool \cite{mediawiki-import} is used to import the XML file from Wikipedia's database dump into the local MediaWiki installation, creating a small version of Wikipedia containing only the articles needed for this research.
-The MediaWiki platform takes care of converting MediaWiki markup into HTML when it receives an HTTP request for a given article, just like with regular Wikipedia.
+Once installed, the database import tool \cite{mediawiki-import} was used to import the XML file from Wikipedia's database dump into the local MediaWiki installation, creating a small version of Wikipedia containing only the articles needed for this research.
+The MediaWiki platform takes care of converting MediaWiki markup into HTML when it receives an HTTP request for a given article, just like regular Wikipedia.
 
 \subsubsection{Finding Redirects}
 \label{subsec:finding-redirects}
@@ -117,8 +117,8 @@ These redirect tags were discovered by using findRedirects.py.
 This script does two things.
 First, it changes the {\tt wikiTitle} field in the {\tt indexToWiki} table from the title of the redirect page (``$5^\prime$ cap'' in the above example) to the title of the page it redirects to (``Five prime cap``).
 Second, it prints out the wikified title (``Five prime cap'' becomes ``Five\_prime\_cap``) on each line of output.
-The results of the program's output is then copy-pasted back into the Wikipedia exporter \cite{wiki-exporter}, yielding a new XML database dump full of the complete articles.
-This XML file is then imported into the MediaWiki site, giving the redirect pages their respective targets to point to.
+The results of the program's output were then copy-pasted back into the Wikipedia exporter \cite{wiki-exporter}, yielding a new XML database dump full of the complete articles.
+This XML file was then imported into the MediaWiki site, giving the redirect pages their respective targets to point to.
 
 The process of resolving redirects did not need to be done on the second XML database dump because it only contained full articles (no redirects to other pages).
 
@@ -205,7 +205,6 @@ A relational database is used to store the book's text so that it can be queried
 To expedite the structuring process, text was copied manually from the PDF, and pasted into a plain text document.
 Regular expressions were used to massage the data into a simple, comma separated format.
 In this format, each line represents a unique index entry, with the first column in a line holding the index label (or name), and each subsequent column holds a page number the label can be found on.
-Now that the data are more easily parsable, there must be a way to it in a relational database for analysis purposes.
 
 A table is created to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
 In this table, indexId is an autoincrementing ID, label is the name of the index entry as it appears in the book (e.g., ``Acid rain''), and wikiLabel is the label if the label were a wikipedia article name (e.g., ``Acid\_rain'') which is achieved by replacing spaces in the label with underscores.
@@ -272,7 +271,7 @@ title \\
 \end{tabular} 
 \end{center}
 
-This data is imported into the {\tt articleTitles} table using the {\tt titleImporter.php} script (see Appendix C).
+This data was imported into the {\tt articleTitles} table using the {\tt titleImporter.php} script (see Appendix C).
 Now that both the index labels and article titles exist in the relational database, the two datasets can be intersected by running the following MySQL command, where {\tt BINARY} requires case sensitive matching:
 
 \begin{lstlisting}[language=SQL]
@@ -346,7 +345,7 @@ paraNum \\
 The contents of a paragraph are stored in the {\tt paragraph} table's body, along with information about the paragraph's location.
 {\tt pageNum} and {\tt endPageNum} specify the pages on which the paragraph starts and ends, since a paragraph may continue onto another page.
 
-To associate these paragraphs with the index labels in the {\tt index} table, the {\tt indexedParagraph} table was creted.
+To associate these paragraphs with the index labels in the {\tt index} table, the {\tt indexedParagraph} table was created.
 This lookup table specifies a many to many relationship between {\tt paragraph} and {\tt index}, since an index entry refers to at least one paragraph, and a paragraph may contain zero or more index references. Once these tables are created, it's time to create the indexed
 
 \subsubsection{Collecting the Indexed Text}

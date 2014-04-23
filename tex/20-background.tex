@@ -7,7 +7,7 @@ Since indexing a book is so expensive and time consuming, it makes sense to see 
 To automate the indexing process, software exists to replace the indexer's index cards with a more efficient computerized organization system.
 However, there is a new, rising interest in seeing if computers can generate indexes deterministically, without the help of human beings.
 To do this, software engineers and researchers must apply natural language processing techniques in new and interesting ways.
-Before any application, one must understand how well humans can generate indexes to understand how accurate computer need to be in order to match them.
+Before any application can be built, one must understand how well humans can generate indexes to understand how accurate computer need to be in order to match them.
 
 \subsection{Accuracy of Human and Automatic Indexes}
 
@@ -17,7 +17,7 @@ In {\it Natural-Language Processing and Automatic Indexing}, an article publishe
 \begin{enumerate}
 \item if two people or groups of people construct thesauri in a given subject area, only 60\% of the index terms may be common to both;
 \item if two experienced indexers index a given document using a given thesaurus, only 30\% of the index terms may be common to the two sets;
-\item if two intermediaries [person who undertakes a database search on behalf of the user] search the same question on the same database on the same host, only 40\% of theoutput may be common to both searches;
+\item if two intermediaries [person who undertakes a database search on behalf of the user] search the same question on the same database on the same host, only 40\% of the output may be common to both searches;
 \item if two scientists or engineers are asked to judge the relevance of a given set of documents to a given question, the area of agreement may not exceed 60\%.\cite{automatic-indexing}
 \end{enumerate}
 \end{quote}
@@ -32,15 +32,15 @@ Now that a metric for index quality has been established, the next section backg
 
 Natural language processing (NLP) is, ``a form of computational linguistics in which natural-language texts are processed by computer (for automatic machine translation, literary text analysis, etc.)''\cite{oed-nlp}.
 Essentially, it is the area of study in computer science where language and logic meet.
-The sub-discipline of natural language processing (NLP) has existed since the beginning of electronic computers themselves (around 1940), but it has not existed in the modern sense until more recently.
+Natural language processing (NLP) has existed since the beginning of electronic computers themselves (around 1940), but it has not existed in the modern sense until more recently.
 Today, there is a growing focus on teaching computers to understand and learn the desired qualities of a text so they can be analyzed and extracted from large amounts of textual data\cite{jurafsky}.
 
 Internet search engines like Google rely on NLP techniques to generate their search results\footnote{As of March 1, 2014, Google has published 219 whitepapers on NLP topics, primarily on how to use NLP to improve search results.\cite{google-nlp}}, text editing software uses NLP to detect grammatical errors in sentences\cite{norvig}, and mobile applications use NLP to extract summaries from long form text\cite{bit-of-news}.
 
 \subsubsection{Machine Learning}
 
-The process of teaching computer to learn and understand information is called machine learning.
-Computer learning sounds complicated, but ultimately machine learning is about programming computers to answer questions about new, previously unseen data by correlating it to data it has previously seen, or {\it trained} on.
+The process of teaching a computer to learn and understand information is called machine learning.
+Machine learning sounds complicated, but ultimately it is about programming computers to answer questions about new, previously unseen data by correlating it to data it has previously seen (the data it has been {\it trained} on).
 In {\it Natural Language Processing with Python}, an introductory NLP textbook, the authors use the example of name genders ({\it e.g.}, {\it Mike} is male and {\it Valerie} is female) to help readers understand how machine learning is used to help computers understand language\cite{nlpwp}.
 Given a list of names, a computer can be taught to determine (with reasonably high accuracy) whether a new, unseen name is masculine or feminine.
 English readers use certain heuristics (shortcuts) to aid in determining the gender of a name, and computers can do the same.
@@ -55,7 +55,7 @@ Unsupervised machine learning algorithms are outside the scope of this research,
 \subsubsection{Document Classification}
 % Document classification and automatic indexing
 Document classification is a type of NLP that uses machine learning methods like those above, and is used in this research to create a computer generated index.
-Document classification involves taking a piece of text (known as a {\it document}) as input and producing a label or {\it class} as output\cite{jurafsky}%.
+Document classification involves taking a piece of text (known as a {\it document}) as input and producing a label or {\it class} as output\cite{jurafsky}.
 Determining a name's gender can be thought of as document classification on a very small scale; a ``document'' in that case is a single name.
 When applying document classification to automatic indexing, the size of the input documents must be defined.
 Since classifiers label every input document with the most probable class\footnote{Classifiers do not have an ``unsure'' or ``ambiguous'' category; if the gender of a particular name is confusing, it is still assigned a gender according to the gender that is most likely, even if it is only slightly more likely than another gender.} the size of the document should be the smallest piece of text likely to contain an index reference.
@@ -67,15 +67,15 @@ While typically a paragraph will likely only have one index reference, the uncom
 The parameters for success in each of these cases are defined below:
 
 \begin{itemize}
-\item In the trivial $r = 1$ case, a document is successfully labeled when it is labeled with the same class as the human generated index for the same text.
-\item In the case of $r > 1$, this research considers a document successfully labeled if it is assigned one of the same index labels as the source text's index.
-\item In the case of $r = 0$, a document can never be successfully labeled, since the classifier must assign the document a class and ``none'' is not an option. This limitation is disappointing, but impossible to avoid when using document classifiers.
+\item In the trivial $r = 1$ case, a document is successfully labeled when it is labeled with the same class the human generated index assigned to it.
+\item In the case of $r > 1$, a document is successfully labeled when it is labeled with {\it one} of the same index labels as the human generated index assigned to it.
+\item In the case of $r = 0$, a document can never be successfully labeled, since the classifier must assign the document a class. While this limitation is disappointing, it is impossible to avoid when using document classifiers. This case does not occur in this research, because the test set is specifically selected to only include documents that are referenced by one or more index entry.
 \end{itemize}
 
 This research makes the overarching that a book with $n$ paragraphs has $n$ index references, or page number references in the book's index.
 Clearly, this is an unrealistic assumption, but when dealing with document classification it is an assumption that must be made.
 
-To clarify terminology, this index is considered to have two index entries or labels, and five index or page number references:
+To clarify terminology, the following index is considered to have two index entries or labels, and five index or page number references:
 
 \begin{center}
 \textit{aardvark} 12, 32, 54, 67 \\
