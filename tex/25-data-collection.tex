@@ -2,10 +2,11 @@
 \label{sec:data-collection}
 
 This research leverages supervised learning algorithms, meaning it requires a training set and a test set to develop an appropriate feature set to use in conjunction with the supervised learning algorithm.
-The training set allows the algorithm to ``learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
+The training set allows the document classifier to ``learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
 
 Generally, training and test data come from the same corpus, the same set of data\cite{jurafsky}.
 This research takes test and training set data from two different, mutually exclusive corpora.
+The reason for this deviation for convention is to answer the question of whether Wikipedia data can be used to train for any more specific set of input data, like paragraphs from a Biology textbook.
 The training set is composed of paragraphs from Wikipedia articles, with each paragraph labeled by the title of the article it belongs to.
 The test data contain paragraphs from the OpenStax {\it Biology} textbook\cite{biology}, with each paragraph labeled by the index entry that refers to it\footnote{If a {\it Biology} paragraph is not referenced in the index, it is not included in the data set. If it is referenced by multiple index entries, the paragraph is included once per index entry.}
 
@@ -18,7 +19,7 @@ The following sections contain justification for the choice of data for each set
 \subsection{Data Collection Pipeline}
 
 The data for both the training and test sets are collected in a generally similar fashion.
-The source data is parsed and placed into a relational database described in appendix~\ref{appendix:a}.
+The source data is parsed and placed into a relational database described in Appendix~\ref{appendix:a}.
 This relational database is used to make extracting information from both texts and comparing the two data sets easier.
 
 \noindent Since writing the Python NLTK \naive Bayes classifier is much easier if the data can be extracted directly from files (rather than by connecting to the relational database), data are extracted from the relational database and stored into plain text files.
@@ -46,6 +47,10 @@ Figure~\ref{fig:pipeline} visually depicts the pipeline described above.
 \end{center}
 \end{figure}
 
+In order to move data from one section of the data collection pipeline to another, custom scripts were created to automate the process.
+All scripts mentioned in this paper without citation were created specifically for this research by the author.
+The source code for these scripts, as well as the data used in the research, are freely available online (see Appendix~\ref{appendix:c}).
+
 \subsection{Training Set}
 \label{subsec:training-set}
 
@@ -57,21 +62,23 @@ Since this list contains only titles, the contents of the article need to be fet
 Since there are 518 articles to fetch from Wikipedia, downloading each one-by-one would take time and go against Wikipedia's terms of service. Wikipedia does not allow the use of automated web crawlers when it can be avoided\cite{wiki-robots}.
 
 Instead, the articles were fetched using the Wikipedia page exporter \cite{wiki-exporter}, which produces an XML database dump file.
-This file contains the contents for all of the articles specified in the web form, plus extra information about the article like title and date of last edit.
+This file contains the textual contents of all the articles specified in the web form, plus extra information about the article like title and date of last edit.
 The contents of the article are stored in the MediaWiki markup language \cite{mediawiki-markup}.
 This language works similarly to other markup languages like HTML and Markdown, and is used everywhere on Wikipedia.
 Using the page exporter makes it possible to circumvent Wikipedia's rules about crawling the website because the export happens in one bulk data transfer rather than the many very small and frequent transfers a web crawler would make.
 
-Wikipedia content editors must use the MediaWiki language to edit pages. 
-While MediaWiki is great for writing and editing content, it is difficult for computers to directly query text written in the language.
+Wikipedia content editors must use the MediaWiki markup language to edit pages. 
+While MediaWiki markup is great for writing and editing content, it is difficult for computers to directly query text written in the language.
 To solve this problem, the MediaWiki format may be converted to HTML.
 HTML has the useful {\tt <p>} tag, which is used to distinguish paragraphs from one another, a requirement for this research. 
-Unfortunately, the only full-featured MediaWiki to HTML converter is part of the MediaWiki platform itself.
-A computer must be made into a mini-Wikipedia by installing MediaWiki on it and importing data exported from Wikipedia itself.
+Unfortunately, the only full-featured MediaWiki markup to HTML converter is part of Wikipedia itself.
+Thankfully, Wikipedia runs on the MediaWiki framework, which is a free, open source application used to host Wikis in the same way that Wordpress is a platform that hosts blogs.
+The file that was created in the page exporter step above can be imported into any hosted MediaWiki installation, even one on a personal computer.
+By installing MediaWiki on a personal computer and importing the database export file from Wikipedia, one can create their own miniature version of Wikipedia that contains only the articles one is interested in.
 
 \subsubsection{Converting MediaWiki Markup to HTML}
 
-To convert articles to HTML, a local MediaWiki server was installed on a personal computer using MediaWiki's online instructions \cite{mediawiki-installation} with the purpose of creating a local version of Wikipedia that only contains the articles that share titles with index labels from {\bf Biology}.
+To convert the exported articles to HTML, a local MediaWiki server was installed on a personal computer using MediaWiki's online instructions \cite{mediawiki-installation} with the purpose of creating a local version of Wikipedia that only contains the articles that share titles with index labels from {\bf Biology}.
 This mini-Wikipedia can then be crawled using printPageLinks.py to extract and store the HTML versions of the articles.
 
 After installation, all available first-party MediaWiki plugins were enabled in the installation, as Wikipedia uses many of them on their own MediaWiki installation.
@@ -240,7 +247,7 @@ pageNum \\
 \end{tabular} 
 \end{center}
 
-Once these tables were created, the structured CSV file was imported using the custom indexImporter.php (see Appendix B) tool written specifically for this purpose.
+Once these tables were created, the structured CSV file was imported using the custom indexImporter.php tool written specifically for this purpose.
 
 The importer script populates all of the columns in both tables with all of the data in the CSV file.
 
@@ -271,7 +278,7 @@ title \\
 \end{tabular} 
 \end{center}
 
-This data was imported into the {\tt articleTitles} table using the {\tt titleImporter.php} script (see Appendix C).
+This data was imported into the {\tt articleTitles} table using the {\tt titleImporter.php} script.
 Now that both the index labels and article titles exist in the relational database, the two datasets can be intersected by running the following MySQL command, where {\tt BINARY} requires case sensitive matching:
 
 \begin{lstlisting}[language=SQL]
@@ -346,14 +353,14 @@ The contents of a paragraph are stored in the {\tt paragraph} table's body, alon
 {\tt pageNum} and {\tt endPageNum} specify the pages on which the paragraph starts and ends, since a paragraph may continue onto another page.
 
 To associate these paragraphs with the index labels in the {\tt index} table, the {\tt indexedParagraph} table was created.
-This lookup table specifies a many to many relationship between {\tt paragraph} and {\tt index}, since an index entry refers to at least one paragraph, and a paragraph may contain zero or more index references. Once these tables are created, it's time to create the indexed
+This lookup table specifies a many to many relationship between {\tt paragraph} and {\tt index}, since an index entry refers to at least one paragraph, and a paragraph may contain zero or more index references. Once these tables are created, it's time extract the text from {\it Biology} that will be used in the test set.
 
 \subsubsection{Collecting the Indexed Text}
 
 The paragraphs were imported into the relational database using paragraphImporter.php, a small webpage script written specifically for this purpose, allowing a researcher to copy a paragraph into a textbox on that page and fill in the meta data for that paragraph and keep track of the index entries that point to it.
 
 As mentioned above, {\it Biology} comes in PDF form, making it difficult for a computer to parse the individual paragraphs out.
-By using the SQL query below, a list of index entries with the pages on which they appear.
+By using the SQL query below, a list of index entries with the pages on which they appear is extracted from the database.
 
 \begin{lstlisting}
 SELECT DISTINCT ip.pageNum, i.`label`

@@ -1,4 +1,33 @@
 \newpage \appendix \appendixpage \addappheadtotoc
+\section{Indexed Book Statistics}
+\label{appendix:d}
+
+Book Book Goose\cite{book-book-goose}, a random book browsing site, was used to generate a list of 100 random books\footnote{By inspecting network activity while on the site, it is evident that Book Book Goose uses Amazon's product API\cite{amazon-products} to randomly pull book information from Amazon.}.
+Of these books, the books that did not have both an author and a title were discarded, leaving 77 books.
+Each of these books were searched in Google Books\cite{google-books}.
+If a book in the search results matched the book searched, the number of pages the book contained were recorded.
+If the ``preview'' functionality was enabled for the book, the table of contents would be searched for the word ``Index'', and the results of that search (success or failure) were recorded.
+Here are the results of this mini-study:
+
+\begin{center}
+\begin{tabular}{|l|r|}
+\hline 
+Number of books located in Google Books & 58 books \\ 
+\hline 
+Number of books with previews in Google Books & 32 books \\ 
+\hline 
+Number of books with preview and index & 15 books \\ 
+\hline 
+Percent of books with index & 47\% books \\ 
+\hline
+Average pages per book & 350 pages \\ 
+\hline 
+Average pages per indexed book & 380 pages \\ 
+\hline 
+\end{tabular}
+\end{center}
+
+
 \section{Database Schema Definition}
 \label{appendix:a}
 \lstinputlisting[language=SQL]{code/mysql/schemaDefinition.sql}
@@ -8,6 +37,7 @@
 \lstinputlisting[language=Python]{code/tools/classifier.py}
 
 \section{Other Data and Source Code}
+\label{appendix:c}
 
 Throughout the course of this paper, this research mentions several tools and data sets whose source does not appear above in order to keep the number of printed pages to a reasonable number.
 All of theses tools, and the source of this paper, are available online free of charge at \url{https://undergraduate-thesis.mikeholler.me}.

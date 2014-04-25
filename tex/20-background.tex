@@ -7,10 +7,10 @@ Since indexing a book is so expensive and time consuming, it makes sense to see 
 To automate the indexing process, software exists to replace the indexer's index cards with a more efficient computerized organization system.
 However, there is a new, rising interest in seeing if computers can generate indexes deterministically, without the help of human beings.
 To do this, software engineers and researchers must apply natural language processing techniques in new and interesting ways.
-Before any application can be built, one must understand how well humans can generate indexes to understand how accurate computer need to be in order to match them.
 
 \subsection{Accuracy of Human and Automatic Indexes}
 
+When attempting to automate the indexing process, it is important to understand what standards the software will be judged by.
 In {\it Natural-Language Processing and Automatic Indexing}, an article published in {\it The Indexer} by C. Korycinski and Alan F. Newell, the authors cite relevant metrics for automatic indexing excerpted from Cleverdon's work:
 
 \begin{quote}
@@ -24,7 +24,7 @@ In {\it Natural-Language Processing and Automatic Indexing}, an article publishe
 
 Of course, 2 is most relevant, but the other three reveal how imprecisely human beings perform tasks that replicate another human's work.
 In the statistics given above, indexing is the least precise of all of the human classification tasks mentioned above.
-This makes the number to match for an automatic indexer 30\%.
+This makes the gold accuracy standard for an automatic indexer 30\%.
 That is, a computer index compared to a human index should display the same proportion of similarity as a human generated index compared to another human generated index.
 Now that a metric for index quality has been established, the next section backgrounds methods and strategies that can be used to create an automatic indexer that might be able to match this benchmark.
 
@@ -58,11 +58,11 @@ Document classification is a type of NLP that uses machine learning methods like
 Document classification involves taking a piece of text (known as a {\it document}) as input and producing a label or {\it class} as output\cite{jurafsky}.
 Determining a name's gender can be thought of as document classification on a very small scale; a ``document'' in that case is a single name.
 When applying document classification to automatic indexing, the size of the input documents must be defined.
-Since classifiers label every input document with the most probable class\footnote{Classifiers do not have an ``unsure'' or ``ambiguous'' category; if the gender of a particular name is confusing, it is still assigned a gender according to the gender that is most likely, even if it is only slightly more likely than another gender.} the size of the document should be the smallest piece of text likely to contain an index reference.
+Since classifiers label every input document with the most probable class\footnote{Many classifiers---including the one used in this research---do not have an ``unsure'' or ``ambiguous'' category; if the gender of a particular name is confusing, it is still assigned a gender according to the gender that is most likely, even if it is only slightly more likely than another gender.} the size of the document should be the smallest piece of text likely to contain an index reference.
 Since no research recommending a document size for automatic indexing tools exists, this research elects to use paragraphs as documents, such that a book containing $n$ paragraphs would be split up into $n$ unique documents.
 
-Selecting a document size creates room for error, since one paragraph ought not to have any index references, and another might have more than one.
-This is a problem, because a document classifier assigns each document one and only one class.
+Defining a paragraph as the document size creates room for error, since one paragraph may not contain any index references, and another might contain more than one.
+This is a problem, because a document classifier can only assign each document one and only one class.
 While typically a paragraph will likely only have one index reference, the uncommon but possible cases of $r = 0$ and $r > 1$, where $r$ represents the number of references in a paragraph, must be handled gracefully and consistently.
 The parameters for success in each of these cases are defined below:
 
@@ -78,8 +78,12 @@ Clearly, this is an unrealistic assumption, but when dealing with document class
 To clarify terminology, the following index is considered to have two index entries or labels, and five index or page number references:
 
 \begin{center}
-\textit{aardvark} 12, 32, 54, 67 \\
+\begin{tabular}{l}
+\textit{aardvark}, 12, 32, 54, 67 \\
 \textit{apple}, 34
+\end{tabular} 
+
+
 \end{center}
 
 \noindent This does {\it not} mean that a book is assumed to have $n$ unique words or phrases in its index, just that the collection of index words and phrases {\it points to} $n$ pages, since a singular index word might be referenced in multiple places (as seen in {\it aardvark} above).
@@ -123,3 +127,17 @@ The latest available stable version of NLTK (v2.0.4) was used for the entirety o
 Python, the language NLTK is written for, is used for data analysis throughout this research.
 Python is a mature and robust high-level scripting and prototyping language, and is therefore well-suited to the task of exploratory research.
 This research uses the latest version of Python 2, since NLTK only provides alpha-level support for Python 3\cite{nltk-install}.
+
+\subsection{Wikipedia and Indexing}
+
+Wikipedia is one of the largest centralized sources of informative non-fiction writing available today, and at the time of this writing currently has nearly 4.5 million articles in the English language alone\cite{wikipedia}.
+As a free, open resource, Wikipedia is a good candidate for use in Natural Language Processing because of the vast quantities of text it serves on a wide variety of topics.
+
+When using a document classifier to create an index, the classifier needs to pull from a large pool of potential index labels to classify each piece of text with an appropriate index entry.
+In order to classify a document as belonging to a particular class (or index label), the classifier needs to know what other text with that same class looks like (the training set).
+A large pool of index labels must be supported by a proportionately large pool of training data.
+
+If the title of a Wikipedia label is thought of as an index label, Wikipedia would seem to make for a vast, pre-labeled training set.
+Using Wikipedia article titles as if they were index labels is intuitive, since both are short, one- to three-word noun phrases.
+Wikipedia is used as the training set in this research because it represents a very large and comprehensive source of writing in an academic, textbook-like style, and its article titles are nearly identical in form to textbook index labels.
+In theory, if Wikipedia can successfully aid in indexing a book from one subject, it will be easy to create an index from a book with a different subject while using a similar training set.

@@ -69,15 +69,13 @@ The growing number of books published each year and the need for quality indexes
 Since many books contain indexes, any change in the indexing industry directly affects the publication industry.
 If indexing could be made more efficient, the publishing industry could allocate the significant resources that would have gone toward indexing to other, more productive areas.
 
-In {\it Indexing Books}, Nancy Mulvany writes that, ``a typical three-hundred-page can easily cost a thousand dollars or more to index.''
-An example, later in Mulvany's book, estimates a 300 page book at \$1,200.
+In {\it Indexing Books}, Nancy Mulvany estimates that an index for a 300 page book would cost approximately \$1,200.
 This was in 2005.
 Mulvany goes on to estimate the typical price-per-page at 4--6 2005 U.S. dollars\cite{mulvany}.
+These prices are typically related to not only the number of pages, but also the amount of text on each page and the complexity of the topic.
 
-It is possible to approximate the cost of indexing the 328,259 new books published in 2010 (p.~\pageref{fig:new-books}) by making some conservative assumptions that the average book contains 300 pages, the average price-per-page indexing cost of \$5, and 15\% of books require indexes.
-
-The amount of time and money spent on indexing annually can be quantified if a few simplifying assumptions are established.
-All rows without citations are conservative guesses for the purpose of estimation:
+In order to calculate the approximate cost of indexing the 328,259 new books published in 2010, it is also important to know that approximately 47\% of all books have indexes, and that the average indexed book is 380 pages long.
+These data were found by recording page length and index information for 77 books from a random book generator using Amazon's product database. For more information on these numbers, see Appendix~\ref{appendix:d}.
 
 \begin{center}
 \begin{tabular}{|c|l|l|}
@@ -86,11 +84,11 @@ All rows without citations are conservative guesses for the purpose of estimatio
 \hline
 $b$ & Number of books published in 2010 \cite{bowker} & 328,259 books \\
 \hline
-$c$ & Percentage of Books requiring Indexes & 15\% \\
+$c$ & Percentage of Books requiring Indexes (see appx.~\ref{appendix:d}) & 47\% \\
 \hline
 $d$ & Average dollars per page indexed \cite{mulvany} & \$5 \\
 \hline 
-$p$ & Average Number of Pages in Book & 300 pgs \\ 
+$p$ & Average Number of Pages in Book (see appx.~\ref{appendix:d}) & 380 pgs) \\ 
 \hline 
 $r$ & Average Number of Pages Indexed per Hour \cite{connolly} & 7 pgs/hr \\
 \hline
@@ -103,13 +101,13 @@ Given these variables, equations are developed to calculate average cost and tim
 $$ \text{cost} = b \times c \times p \times d $$
 $$ \text{time} = \frac{b \times c \times p}{r} $$
 \\
-$$ 73,858,275 \text{ USD} = 328259 \times 0.15 \times 300 \times 5 $$
-$$ 240 \text{ years}= 2,110,236.48 \text{ hours} = \frac{328259 \times 0.15 \times 300}{7}$$
+$$ 300,000,000 \text{ USD} = 328259 \times 0.47 \times 380 \times 5 $$
+$$ 1000 \text{ years} = 8,000,000 \text{ hours} = \frac{328259 \times 0.47 \times 380}{7}$$
 \caption{The Price of Manual Indexing}
 \end{figure}
 
-An estimate generated using these numbers reveals that over 70 million dollars were spent on indexing books in 2010. Work hours spent creating indexes is also revealing.
-Using a professional indexer's average rate of 7 pages per hour, a similar calculation estimates that over 2 million work hours were spent creating indexes for 2010's new books. It would take a single person 240 years of indexing non-stop.
+An estimate generated using these numbers reveals that over 300 million dollars were spent on indexing books in 2010. Work hours spent creating indexes is also revealing.
+Using a professional indexer's average rate of 7 pages per hour, a similar calculation estimates that over 8 million work hours were spent creating indexes for 2010's new books. It would take a single person 380 years of indexing non-stop.
 
 These numbers reveal the economic impact of indexing, but the individual impact is important too.
 If an author wants to index his or her own book, it would take about 42 hours on average. The author could devote an entire work week towards something more productive if there existed an easier way to generate an index.
@@ -122,7 +120,7 @@ Computer software might be able to reduce these high costs, but first it is impo
 Historically, indexing was all done by hand without the assistance of technology beyond a stack of 3'' x 5'' note cards and a pen.
 The ``index card'' method, as it is called, has the indexer create a separate index card for each word or phrase that appears in the index.
 These note cards are created on the first pass through the document being indexed, and then they are organized alphabetically.
-On the next and subsequent passes, the indexer combs the text looking for references to the words and phrases generated on the first pass, and records each occurrence on the appropriate note card.
+On the next and subsequent passes, the indexer combs the text looking for references to the words and phrases generated on the first pass, and records the page number of each occurrence on the appropriate note card.
 At the end of this process, the selection of words and phrases is edited and then typeset \cite{mulvany}.
 While this old fashioned method worked in the many years before computers became the powerful productivity tools they are today, computers now help indexers by providing purpose-built software that, in effect, replaces the paper note cards with a more efficient digital representation.
 
@@ -132,7 +130,8 @@ Examples of embedded indexing software are Microsoft Word \cite{ms-word-indexing
 Dedicated indexing software, on the other hand, only provides tools whose purpose is to make creating an index easier, like the ability to digitize entries, sort them, and structure them in different ways\cite{mulvany}.
 Dedicated software is different from embedded because dedicated does not allow the user to modify or display the full text of the work itself, instead focusing only on the index.
 Examples of dedicated software are Macrex\cite{macrex} and SKY Index Professional\cite{sky-software}.
-While these two types of software help people generate indexes, it is not the type of software this research is concerned with.
+While these two types of software help indexers generate indexes, the indexer still performs a majority of the work of finding what ought to be indexed.
+Even with today's computer-aided indexing software, the process of creating an index is still very much a manual one.
 
 Automatic indexing is the lesser known third type of indexing software, and it is the subject of this research.
 Mulvany defines automatic indexing software as that which, ``conjures up images of indexing at the push of a button, the computer taking care of all the drudgery and the thinking involved in creating an index''\cite{mulvany}.
