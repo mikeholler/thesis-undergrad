@@ -46,3 +46,5 @@ CREATE TABLE `articleTitles` (
     `titleId` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     `title` VARCHAR(1023)
 ) ENGINE InnoDB;
+
+editing file
