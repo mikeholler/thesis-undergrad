@@ -362,7 +362,7 @@ The paragraphs were imported into the relational database using paragraphImporte
 As mentioned above, {\it Biology} comes in PDF form, making it difficult for a computer to parse the individual paragraphs out.
 By using the SQL query below, a list of index entries with the pages on which they appear is extracted from the database.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=SQL]
 SELECT DISTINCT ip.pageNum, i.`label`
     FROM thesis.`index` i,
          thesis.indexToWiki iw,

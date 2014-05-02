@@ -1,4 +1,5 @@
-\documentclass[10pt,letterpaper]{article}
+\documentclass[12pt,letterpaper]{article}
+%\usepackage[margin=1.5in]{geometry}
 \usepackage{etex}
 %\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -27,14 +28,24 @@
 \usepackage{draftwatermark}
 \usepackage{tabularx,ragged2e,booktabs,caption}
 \usepackage{xspace}
+%\usepackage{showframe} % For signature and date.
 \newcolumntype{C}[1]{>{\Centering}m{#1}}
 \renewcommand\tabularxcolumn[1]{C{#1}}
 \SetWatermarkColor[rgb]{1,0.85,0.85}
-\SetWatermarkScale{2.5}
 %-------------------------------------------------
 % From http://tex.stackexchange.com/a/60212/31317
 \usepackage{titlesec}
 \usepackage{hyperref}
+\usepackage{fontspec}
+
+\setmainfont[Ligatures=TeX]{Times New Roman}
+\setmonofont[Scale=MatchLowercase]{DejaVu Sans Mono}
+
+% Signature and date command.
+%\newcommand*{\SignatureAndDate}[1]{%
+%    \par\noindent\makebox[2.5in]{\hrulefill} \hfill\makebox[2.0in]{\hrulefill}%
+%    \par\noindent\makebox[2.5in][l]{#1}      \hfill\makebox[2.0in][l]{Date}%
+%}%
 
 \titleclass{\subsubsubsection}{straight}[\subsection]
 
@@ -70,7 +81,50 @@
 \author{Michael Holler}
 \title{Automated Textbook Indexing with Na\"ive Bayes Classifier Trained on Wikipedia Articles}
 \begin{document}
-\maketitle
+\makeatletter
+\begin{titlepage}
+\begin{center}
+{\LARGE \@title}
+
+\vspace{1in}
+{\Large \@author}
+
+\vspace{1in}
+\textsc{\LARGE Senior Honors Thesis}
+
+\vspace{0.3in}
+Submitted in Partial Fulfillment of Requirements of the\\
+{\it College Scholars Honors Program}\\
+{\it North Central College}
+
+\vspace{1in}
+\@date
+
+\vspace{1in}
+\begin{tabular}{llll}
+Approved: & $\underset{\text{Thesis Director Signature}}{\line(1,0){150}}$ & Date: & \line(1,0){70} \\[1.45ex] 
+& \multicolumn{1}{c}{{\footnotesize Dr. Caroline St. Clair}} && \\ 
+\end{tabular}
+
+\vspace{0.35in}
+\begin{tabular}{llll}
+Approved: & $\underset{\text{Thesis Director Signature}}{\line(1,0){150}}$ & Date: & \line(1,0){70} \\[1.45ex] 
+& \multicolumn{1}{c}{{\footnotesize Dr. Michael De Brauw}} && \\ 
+\end{tabular} 
+
+%Approved: $\underset{\text{Thesis Director Signature}}{\line(1,0){150}}$ \quad Date: %\line(1,0){70}
+
+%\vspace{0.25in}
+%Approved: $\underset{\text{Second Reader Signature}}{\line(1,0){150}}$ \quad Date: \line(1,0){70}
+
+%{\LARGE Senior Honors Thesis}
+\end{center}
+\end{titlepage}
+\makeatother
+%\maketitle
+%\SignatureAndDate{Thesis Director Signature}
+%\SignatureAndDate{Second Reader Signature}
+
 \newpage
 \epigraph{You want weapons? We're in a library! Books! The best weapons in the world! This room's the greatest arsenal we could have---arm yourselves!}{---The Doctor}
 \epigraph{Automatic indexing of books has failed miserably, as will be discussed below.}{Nancy Mulvany, {\it Indexing Books}}

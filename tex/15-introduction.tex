@@ -2,11 +2,11 @@
 
 The number of books published in the U.S. has been on the rise for at least the past decade, only incurring a small setback in 2005\cite{bowker}.
 In 2010, Bowker recorded 328,259 new books published in the United States---up from 302,410 during the previous year.
-Despite concerns that the paper book is on it's way out, the book publishing industry is still very much a growing one.
+Despite concerns that the paper book is on its way out, the book publishing industry is still very much a growing one.
 
 % New Books Published per Year Graph
+\begin{figure}
 \begin{center}
-\begin{figure}[H]
 \label{fig:new-books}
 \begin{tikzpicture}
 	\begin{axis}[
@@ -53,8 +53,8 @@ Despite concerns that the paper book is on it's way out, the book publishing ind
 	\end{axis}
 \end{tikzpicture}
 \caption{Publication statistics for traditional books published in the U.S.\cite{bowker}}.
-\end{figure}
 \end{center}
+\end{figure}
 
 It's a fair assumption that many of these new books also contain an index section between their covers.
 An index, of course, is, ``An alphabetical list, placed (usually) at the end of a book, of the names, subjects, etc. occurring in it, with indication of the places in which they occur,'' \cite{oed-index}.
@@ -99,9 +99,11 @@ Given these variables, equations are developed to calculate average cost and tim
 
 \begin{figure}[H]
 $$ \text{cost} = b \times c \times p \times d $$
+
 $$ \text{time} = \frac{b \times c \times p}{r} $$
-\\
+
 $$ 300,000,000 \text{ USD} = 328259 \times 0.47 \times 380 \times 5 $$
+
 $$ 1000 \text{ years} = 8,000,000 \text{ hours} = \frac{328259 \times 0.47 \times 380}{7}$$
 \caption{The Price of Manual Indexing}
 \end{figure}

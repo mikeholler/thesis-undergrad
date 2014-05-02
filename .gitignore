@@ -3,3 +3,9 @@
 *.tks
 *~
 
+document.aux
+document.log
+document.out
+document.pdf
+document.synctex.gz
+document.toc
