@@ -7,7 +7,7 @@ Sections \ref{subsec:training-set} and \ref{subsec:test-set} outline the trainin
 \subsection{Feature Set}
 
 Arguably the single most important part of the document classifier is its feature set, and the quality of the feature(s) chosen for the training and test data can mean the difference between a highly accurate classifier and a faulty one.
-To make the most of the data collected earlier (see~\ref{sec:data-collection}), 24 trials are run, each using a different feature set.
+To make the most of the data collected earlier (see section~\ref{sec:data-collection}), 24 trials are run, each using a different feature set.
 While each of the 24 feature sets are indeed different, they created from all of the possible combinations of three different feature characteristics: case-sensitivity, feature, and sampling technique.
 
 \subsubsection{Case Sensitivity}
@@ -21,7 +21,7 @@ Since case-sensitivity has the power to affect a classifier's results, all featu
 
 When creating a feature set, one must decide the criteria by which individual words are selected as features.
 The primary feature defines how features are discovered in the text, and this research runs trials with four different primary features.
-To make the selection of these features easier to understand, the following slightly modified excerpt from Wikipedia's ``Animal'' article will be used throughout this section as an example of the selection process\footnote{{\bf Bold} text represents a link to another article as seen by a user, whereas the \textsuperscript{\it superscript} text immediately following bold text represents the title of the article being linked to. This title is not seen by the users until they click the bold link text.}
+To make the selection of these features easier to understand, the following slightly modified excerpt from Wikipedia's ``Animal'' article will be used throughout this section as an example of the selection process.\footnote{{\bf Bold} text represents a link to another article as seen by a user, whereas the \textsuperscript{\it superscript} text immediately following bold text represents the title of the article being linked to. This title is not seen by the users until they click the bold link text.}
 
 \begin{quote}
 All animals are {\bf heterotrophic beings}\textsuperscript{Heterotroph}, meaning that they feed directly or indirectly on other living things. They are often further subdivided into groups such as {\bf carnivores}\textsuperscript{Carnivore}, {\bf herbivores}\textsuperscript{Herbivore}, {\bf omnivores}\textsuperscript{Omnivore}, and {\bf parasites}\textsuperscript{Parasitic animals}.
@@ -29,29 +29,31 @@ All animals are {\bf heterotrophic beings}\textsuperscript{Heterotroph}, meaning
 
 \subsubsubsection{Contains}
 
-The simplest of all features, the contains feature consists of all the words in the training set.
-The contains feature is suggested in Natural Language Processing with Python and Speech and Language Processing as a simple starting point for creating a feature set\cite{nlpwp,jurafsky}.
-If the above paragraph were processed as training data by a \naive Bayes classifier, every word would be selected\footnote{\underline{Underlines}, both here and throughout this paper, are used to denote feature selection. Each solid underline represents a \underline{single feature}.}
+The simplest of all features, the {\it contains} feature consists of all the words in the training set.
+The contains feature is suggested in Natural Language Processing with Python and Speech and Language Processing as a simple starting point for creating a feature set~\cite{nlpwp,jurafsky}.
+If the above paragraph were processed as training data by a \naive Bayes classifier, every word would be selected.\footnote{\underline{Underlines}, both here and throughout this paper, are used to denote feature selection. Each solid underline represents a \underline{single feature}.}
+If the training set had 1,000 unique words, it would have 1,000 different ``contains'' features, one for each word.
 
 \begin{quote}
 \underline{All} \underline{animals} \underline{are} {\bf \underline{heterotrophic} \underline{beings}}\textsuperscript{Heterotroph}, \underline{meaning} \underline{that} \underline{they} \underline{feed} \underline{directly} \underline{or} \underline{indirectly} \underline{on} \underline{other} \underline{living} \underline{things}. \underline{They} \underline{are} \underline{often} \underline{further} \underline{subdivided} \underline{into} \underline{groups} \underline{such} \underline{as} \underline{\bf carnivores}\textsuperscript{Carnivore}, \underline{\bf herbivores}\textsuperscript{Herbivore}, \underline{\bf omnivores}\textsuperscript{Omnivore}, \underline{and} \underline{\bf parasites}\textsuperscript{Parasitic animals}.
 \end{quote}
 
-From the above paragraph, it intuitively clear that many of the words above, like ``things'', ``other'', ``subdivided'', {\it et al.} are not indicative of the word Enzyme.
-One of the drawbacks of the contains feature is how many unhelpful words make it into the feature set, since literally every word in the training set is its own feature.
+Many of the underlined words above, like ``things'', ``other'', ``subdivided'', {\it et al.} are not indicative of the word Enzyme.
+One of the drawbacks of the contains feature is how many unhelpful---but nevertheless underlined---words make it into the feature set, since literally every word in the training set is its own feature.
+Since features are supposed to communicate information about a text (in this case, features are used to indicate an article's subject), the presence of so many features that do not help indicate the paragraph's subject suggests the {\it contains} primary feature characteristic does not describe an optimal feature set.
 Therefore, it makes sense to try some more restrictive feature sets in addition to testing the contains feature.
 
 \subsubsubsection{In First Sentence}
 
-A summary is similar to an index in that they both attempt to summarize a large amount of text into a very small amount of text, so it seemed like the sources collected {\it Speech and Language Processing} for the topic of automatic extractive summarization might also apply to automatic indexing.
+A summary is similar to an index in that they both attempt to summarize a large amount of text into a very small amount of text, so it seemed likely that the sources collected in {\it Speech and Language Processing} for the topic of automatic extractive summarization might also apply to automatic indexing.
 Both this and the next primary feature are inspired by the section of Jurafsky and Martin's covering supervised selection of content for extractive summarization.
 The section lists several features that can be used to select sentences, ``that are predictive of being a good sentence to appear in a summary''.
-In the list of five possible features for extractive summarization, ``position'' appeared to apply most to both extractive summarization and automatic indexing.
+Of the five possible features for extractive summarization listed, ``position'' seemed a likely choice for automatic indexing for reasons that will become clear shortly.
 
 Position of a piece of text inside a document can indicate a sentence that summarizes a larger group of text, as in the case of a topic sentence in a paragraph.
-Research indicates that the first sentence of a paragraph\footnote{Known as the ``topic sentence'' by many.} is usually a good candidate for use in a summary, and therefore is likely to contain terms that indicate a certain index entry\cite{jurafsky}.
+Research indicates that the first sentence of a paragraph\footnote{Known as the ``topic sentence'' by many.} is usually a good candidate for use in a summary, and therefore is likely to contain terms that indicate a certain index entry~\cite{jurafsky}.
 
-The first way this research uses position in text to inform feature selection for automatic indexing is by including every unique word in the first sentence of each paragraph in the training set in the feature set.
+The first way this research uses position in text to inform feature selection for automatic indexing is by including in the feature set every unique word in the first sentence of each paragraph in the training set.
 This means the example training paragraph looks like this when the ``in first sentence'' feature is used:
 
 \begin{quote}
@@ -86,7 +88,7 @@ Since most---if not all---of the links in Wikipedia are used to provide backgrou
 This research uses this data to create a primary feature by pre-processing the Wikipedia training set, gathering all of the intra-Wiki links using the method described in section~\ref{sec:ranked-titles}, and storing them in a file by most-recent title first.
 These titles are used in a {\it contains(title)} feature, where the feature processor records which of the titles a particular article has in text.
 
-For example, the following text would be pre-processed and the words ``Heterotroph'', ``Carnivore'', ``Herbivore'', ``Omnivore'', and ``Parasitic animals'' would appear in the feature set.
+For example, the example training paragraph would be pre-processed and the words ``Heterotroph'', ``Carnivore'', ``Herbivore'', ``Omnivore'', and ``Parasitic animals'' would appear in the feature set.
 When this same text is processed by the feature processor in the training set, the processor checks whether the text contains any of these five words, in addition to the other words in the feature set.
 The processor would find ``Heterotroph'', since the word is inside ``{\bf heterotroph}ic beings'', and it would likewise find ``Carnivore'', ``Herbivore'', and ``Omnivore''.
 However, it would not find ``parasites'', because the title of the article the word happens to link to is ``Parasitic animals'', and the latter string of text is nowhere to be found in the original source.
@@ -106,12 +108,10 @@ It is predicted that this feature will perform best when using a case-insensitiv
 
 Since the source texts for the training and test sets are so large, applying any one of the primary features listed above generates a large number of features.
 When applying the contains feature, for example, the feature processor found 51,261 unique words in the training set.
-A number this large would not seem to be a problem for computers today, however in writing the classifier it was discovered that every 2,000 features requires 1.6 gigabytes of memory in order to run adds approximately 30 minutes to the classifier's runtime.
+A number this large would not seem to be a problem for computers today; however, in writing the classifier it was discovered that every 2,000 features required 1.6 gigabytes of memory in order to run and adds approximately 30 minutes to the classifier's run time.
 With 51,261 features to select for a case-sensitive contains feature set, the classifier would require approximately 40 gigabytes of memory and would run for over 10 hours before producing a result.
-For the modern commodity computers this research had access to---and the desire for breadth of results---these requirements were considered too large.
-To reduce the memory and time requirements, the cardinality of the feature sets were reduced to 2,000, what was considered an acceptable number based on the resources available. 
-
-When reducing a feature set, the criteria used to keep and remove features affect the results of the classifier.
+For the computers this research had access to---and the desire for breadth of results---these requirements were considered too high.
+To reduce the memory and time requirements, the cardinalities of each the feature set were restricted to 2,000 features each; an acceptable number based on the resources available; however, when reducing a feature set, the criteria used to keep and remove features may affect the results of the classifier.
 In the next section, different techniques for selecting a subset of features are discussed.
 
 \subsubsection{Feature Sampling Technique}
@@ -133,8 +133,8 @@ The group of randomly selected features was included as a control for the most a
 
 \subsection{Conducting the Experiment}
 
-After gathering the data and establishing the different feature characteristic combinations that will be tested, the next step was writing the classifier and means of testing it.
-After the classifier was written, it was installed on a number of computers and run with all 24 unique combinations of feature characteristics listed below in table~\ref{tab:feature-characteristics}. 
+After gathering the data and establishing the different feature characteristic combinations to, the next step was writing the classifier.
+After the classifier was written, it was installed on a number of computers and tested with all 24 unique combinations of feature characteristics listed below in Table~\ref{tab:feature-characteristics}. 
 
 \begin{center}
 \begin{table}[H]
@@ -179,35 +179,33 @@ Random \\
 
 The classifier is implemented in Python and uses the Natural Language Toolkit library (discussed in section~\ref{sec:nltk}).
 classifier.py takes the inputs of a directory containing plain text Wikipedia articles extracted in section~\ref{subsubsec:RDB2F}, the directory of plain text {\it Biology} paragraphs (\ref{sec:training-files}), rankedTitles.txt (\ref{sec:ranked-titles}) and the indexToWiki.json map of index labels to Wikipedia page titles (\ref{sec:indexToWiki}).
-With these inputs, the script trains a \naive Bayes classifier (imported from NLTK) using the combination of feature characteristics is is configured to use at the bottom of the program file.
+With these inputs, the script trains a \naive Bayes classifier (imported from NLTK) using the combination of feature characteristics is configured to use at the bottom of the program file.
 Once trained, the program tests the classifier against the {\it Biology} test set.
 Once testing is complete, the program outputs the combination of feature characteristics used to create the feature set, followed by a fractional percentage representing the classifier's accuracy using NLTK's {\it classify} module and the test set.
-The code for classifier.py is reproduced in appendix~\ref{appendix:b}.
+The code for classifier.py is shown in appendix~\ref{appendix:b}.
 
 \subsubsection{Running the Classifier}
 
 The classifier was run on twelve commodity HP computers with 64-bit Windows 7, Intel i7 processors, and 4 gigabytes of memory installed.
-A zip file containing classifier.py, plain text Wikipedia data, plain text {\it Biology} data, indexToWiki.json, and rankedTitles.txt was copied twice onto each of the two computers.
+A zip file containing classifier.py, plain text Wikipedia data, plain text {\it Biology} data, indexToWiki.json, and rankedTitles.txt was copied twice\footnote{The processor would have allowed up to four instances of the classifier to run simultaneously (one on each core), but the classifier's large memory requirements meant that only two instances of the classifier program could run comfortably on each computer.} onto each of the computers.
 Each copy of the classifier was then configured to use a unique combination of feature characteristics defining the contents of the feature set.
 Finally, both copies of classify.py were ran simultaneously on each computer, taking advantage of the processors' multiple cores.
 When each process completed execution, the terminated process's feature characteristics and accuracy were noted in a spreadsheet.
 
 \subsection{Experimental Results and Discussion}
 
-The experiment's 24 trials are summarized by the two tables below.
-Both tables contain the same results, but they are presented in two different ways to aid understanding.
+The experiment's 24 trials and their results are summarized in tables \ref{tab:results-grouped} and \ref{tab:results-sorted} below.
 Table~\ref{tab:results-grouped} presents the experiment's results grouped by feature characteristic, making it possible to easily locate and compare the effectiveness between features with many similar feature characteristics.
+Table~\ref{tab:results-grouped}, table~\ref{tab:results-sorted} organizes the experimental results by accuracy, with the most accurate features on top.
 
-The table shows, that generally, case-insensitive matches are more accurate than case-sensitive matches (by about double).
+Table~\ref{tab:results-grouped} shows, that generally, case-insensitive matches are more accurate than case-sensitive matches (by about double).
 The best case-sensitive feature combines the {\it most frequent} and {\it in first sentence} feature characteristics, while the best case-insensitive feature (and best overall feature) combines {\it linked article titles} and {\it most frequent}.
-The table also shows that a simple contains feature yields the worst results of all primary features, with a peak of 0.40\% accuracy when it is used in combination both the {\it random} and {\it case-insensitive} feature characteristics.
+The table also shows that the {\it contains} feature yields the worst results of all primary features, with a peak of 0.40\% accuracy when it is used in combination with the {\it random} and {\it case-insensitive} feature characteristics.
 This is to be expected, since the other three primary features use heuristics to select only individual features that are more likely to have relevance to the entire paragraph than a random word in the text.
 
-As a complement to table~\ref{tab:results-grouped}, table~\ref{tab:results-sorted} organizes the experimental results by accuracy, with the most accurate features on top.
-This table gives an idea of the general success of the various features relative to the next most- and next least-accurate feature.
+Table~\ref{tab:results-grouped} shows the general success of the various features relative to the next most and next least accurate feature.
 From this table, it is clear that the best feature is significantly more accurate than any other feature with an accuracy of 9.49\%.
-Since humans reach an indexing accuracy of 30\%\cite{automatic-indexing}, these results are less then desirable, but they are a good start.
-The next best method is {\it case-insensitive, in first sentence, most frequent} at a faraway 3.03\%.
+The next best method is {\it case-insensitive, in first sentence, most frequent} at 3.03\%.
 After the top two, the two case-sensitive versions of these features follow at 1.21\% and 1.82\% respectively.
 
 Visibly, table~\ref{tab:results-sorted} also reveals a trend in sampling technique that is worthy of discussion.

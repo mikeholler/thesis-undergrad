@@ -4,11 +4,11 @@
 This research leverages supervised learning algorithms, meaning it requires a training set and a test set to develop an appropriate feature set to use in conjunction with the supervised learning algorithm.
 The training set allows the document classifier to ``learn'' how to classify different sections of text, and the test set is used to validate that documents are classified correctly.
 
-Generally, training and test data come from the same corpus, the same set of data\cite{jurafsky}.
+Generally, training and test data come from the same corpus, the same set of data~\cite{jurafsky}.
 This research takes test and training set data from two different, mutually exclusive corpora.
 The reason for this deviation for convention is to answer the question of whether Wikipedia data can be used to train for any more specific set of input data, like paragraphs from a Biology textbook.
 The training set is composed of paragraphs from Wikipedia articles, with each paragraph labeled by the title of the article it belongs to.
-The test data contain paragraphs from the OpenStax {\it Biology} textbook\cite{biology}, with each paragraph labeled by the index entry that refers to it\footnote{If a {\it Biology} paragraph is not referenced in the index, it is not included in the data set. If it is referenced by multiple index entries, the paragraph is included once per index entry.}
+The test data contain paragraphs from the OpenStax {\it Biology} textbook~\cite{biology}, with each paragraph labeled by the index entry that refers to it\footnote{If a {\it Biology} paragraph is not referenced in the index, it is not included in the data set. If it is referenced by multiple index entries, the paragraph is included once per index entry.}
 
 Due to the sheer size of Wikipedia and the memory and computational power available for this research, the data set was reduced by selecting only paragraphs from Wikipedia articles whose title matched an index entry in {\it Biology}.
 Likewise, this research makes an assumption that the set of all reasonable index entries for any textbook is the same as the set of all titles in the English Wikipedia.
@@ -22,7 +22,7 @@ The data for both the training and test sets are collected in a generally simila
 The source data is parsed and placed into a relational database described in Appendix~\ref{appendix:a}.
 This relational database is used to make extracting information from both texts and comparing the two data sets easier.
 
-\noindent Since writing the Python NLTK \naive Bayes classifier is much easier if the data can be extracted directly from files (rather than by connecting to the relational database), data are extracted from the relational database and stored into plain text files.
+Since writing the Python NLTK \naive Bayes classifier is much easier if the data can be extracted directly from files (rather than by connecting to the relational database), data are extracted from the relational database and stored into plain text files.
 Text in these files are separated into paragraphs by a double newline ({\tt \textbackslash n\textbackslash n}).
 Figure~\ref{fig:pipeline} visually depicts the pipeline described above.
 
@@ -54,16 +54,17 @@ The source code for these scripts, as well as the data used in the research, are
 \subsection{Training Set}
 \label{subsec:training-set}
 
-The training set is created from a list of Wikipedia articles whose titles are also index labels in {\it Biology} (see~\ref{subsec:reducing}).
+The training set is created from a list of Wikipedia articles whose titles are also index labels in {\it Biology} (see section~\ref{subsec:reducing}).
 Since this list contains only titles, the contents of the article need to be fetched from Wikipedia itself.
 
 \subsubsection{Downloading the Training Data}
 
-Since there are 518 articles to fetch from Wikipedia, downloading each one-by-one would take time and go against Wikipedia's terms of service. Wikipedia does not allow the use of automated web crawlers when it can be avoided\cite{wiki-robots}.
+There are numerous articles to fetch from Wikipedia (see section~\ref{subsec:reducing}).
+Downloading each one-by-one would take time and violate Wikipedia's terms of service. Wikipedia does not allow the use of automated web crawlers when it can be avoided~\cite{wiki-robots}.
 
-Instead, the articles were fetched using the Wikipedia page exporter \cite{wiki-exporter}, which produces an XML database dump file.
+Instead, the articles were fetched using the Wikipedia page exporter~\cite{wiki-exporter}, which produces an XML database dump file.
 This file contains the textual contents of all the articles specified in the web form, plus extra information about the article like title and date of last edit.
-The contents of the article are stored in the MediaWiki markup language \cite{mediawiki-markup}.
+The contents of the article are stored in the MediaWiki markup language~\cite{mediawiki-markup}.
 This language works similarly to other markup languages like HTML and Markdown, and is used everywhere on Wikipedia.
 Using the page exporter makes it possible to circumvent Wikipedia's rules about crawling the website because the export happens in one bulk data transfer rather than the many very small and frequent transfers a web crawler would make.
 
@@ -78,18 +79,18 @@ By installing MediaWiki on a personal computer and importing the database export
 
 \subsubsection{Converting MediaWiki Markup to HTML}
 
-To convert the exported articles to HTML, a local MediaWiki server was installed on a personal computer using MediaWiki's online instructions \cite{mediawiki-installation} with the purpose of creating a local version of Wikipedia that only contains the articles that share titles with index labels from {\bf Biology}.
+To convert the exported articles to HTML, a local MediaWiki server was installed on a personal computer using MediaWiki's online instructions~\cite{mediawiki-installation} with the purpose of creating a local version of Wikipedia that only contains the articles that share titles with index labels from {\bf Biology}.
 This mini-Wikipedia can then be crawled using printPageLinks.py to extract and store the HTML versions of the articles.
 
 After installation, all available first-party MediaWiki plugins were enabled in the installation, as Wikipedia uses many of them on their own MediaWiki installation.
-Once installed, the database import tool \cite{mediawiki-import} was used to import the XML file from Wikipedia's database dump into the local MediaWiki installation, creating a small version of Wikipedia containing only the articles needed for this research.
+Once installed, the database import tool~\cite{mediawiki-import} was used to import the XML file from Wikipedia's database dump into the local MediaWiki installation, creating a small version of Wikipedia containing only the articles needed for this research.
 The MediaWiki platform takes care of converting MediaWiki markup into HTML when it receives an HTTP request for a given article, just like regular Wikipedia.
 
 \subsubsection{Finding Redirects}
 \label{subsec:finding-redirects}
 
 Inspection of the articles imported into the local MediaWiki installation showed that a large number of the articles are actually just redirect pages to a complete article with a different name.
-The Wikipedia exporter does not provide full pages the redirect pages reference.
+The Wikipedia exporter does not provide the full pages the redirect pages reference.
 There is, however, a way to obtain a list of the full-text files.
 Here is an example of what a redirect page looks like in the XML database dump:
 
@@ -124,7 +125,7 @@ These redirect tags were discovered by using findRedirects.py.
 This script does two things.
 First, it changes the {\tt wikiTitle} field in the {\tt indexToWiki} table from the title of the redirect page (``$5^\prime$ cap'' in the above example) to the title of the page it redirects to (``Five prime cap``).
 Second, it prints out the wikified title (``Five prime cap'' becomes ``Five\_prime\_cap``) on each line of output.
-The results of the program's output were then copy-pasted back into the Wikipedia exporter \cite{wiki-exporter}, yielding a new XML database dump full of the complete articles.
+The results of the program's output were then copy-pasted back into the Wikipedia exporter~\cite{wiki-exporter}, yielding a new XML database dump full of the complete articles.
 This XML file was then imported into the MediaWiki site, giving the redirect pages their respective targets to point to.
 
 The process of resolving redirects did not need to be done on the second XML database dump because it only contained full articles (no redirects to other pages).
@@ -132,26 +133,26 @@ The process of resolving redirects did not need to be done on the second XML dat
 \subsubsection{Saving Pages as HTML}
 \label{sec:html-pages}
 
-Since all necessary articles have been imported into the local MediaWiki server, it is now possible to download them all in HTML.
-To do this, a list of links to each of the articles imported into the MediaWiki server is required.
+Once all necessary articles were imported into the local MediaWiki server, it became possible to download them all in HTML.
+To do this, a list of links to each of the articles imported into the MediaWiki server was required.
 MediaWiki provides this list via the {\tt Special:AllPages} family of pages.
-printPageLinks.py is used to locate all of the links on these special pages and download all non-redirect articles in HTML.
+printPageLinks.py was used to locate all of the links on these special pages and download all non-redirect articles in HTML.
 The Python script saves each article in a file with the same title as the article itself.
 
 \subsubsection{Extracting Paragraphs from Article HTML}
 \label{sec:training-files}
 
-Now that the articles are in HTML, the paragraphs need to be extracted from them and stored in the same format as the {\it Biology} paragraphs from section~\ref{subsubsec:RDB2F}.
-Another Python tool---html2text.py---uses BeautifulSoup \cite{beautifulsoup} to extract the contents of all {\tt <p>} tags from the body of each HTML Wikipedia article.
+Once the articles were made accessible in HTML, the paragraphs needed to be extracted from these articles and stored in the same format as the {\it Biology} paragraphs from section~\ref{subsubsec:RDB2F}.
+Another Python tool---html2text.py---used BeautifulSoup~\cite{beautifulsoup} to extract the contents of all {\tt <p>} tags from the body of each HTML Wikipedia article.
 The script appends each paragraph to a file (one file per article) with each paragraph in the file separated by two newline characters as in section~\ref{subsubsec:RDB2F}.
 
 \subsubsection{Dealing with Disambiguation Pages}
 
-Redirect pages aren't articles in and of themselves, so they were removed from the training set.
+Redirect pages are not articles in and of themselves, so they were removed from the training set.
 However, there is also another type of article whose content does not accurately represent a specific concept, and those are disambiguation pages.
 
 \begin{quote}
-Disambiguation in Wikipedia is the process of resolving the conflicts that arise when a single term is ambiguous---when it refers to more than one topic covered by Wikipedia. \cite{wiki-disambiguation}
+Disambiguation in Wikipedia is the process of resolving the conflicts that arise when a single term is ambiguous---when it refers to more than one topic covered by Wikipedia.~\cite{wiki-disambiguation}
 \end{quote}
 
 A disambiguation page differs in content from a redirect page in two primary ways: disambiguation pages do not follow a specific structure and always link to more than one page.
@@ -165,15 +166,15 @@ Although there was not a deterministic process guiding script, articles were onl
 \subsubsection{Removing Spurious Article Text}
 
 Several of the plain text paragraph files contain spurious ``paragraphs'' at the end of the file which are either ``Cite error''s or links to view the article in a different language.
-Neither of these traits are relevant to the article, so they can be safely removed.
+Neither of these traits are relevant to the article, so they were safely removed.
 Unlike disambiguation pages, locating and removing these errors followed a deterministic, repeatable process.
-The offending pages are located using the pattern matching script cullSpuriousArticleText.sh hand the offending lines were removed by hand.
+The offending pages were located using the pattern matching script cullSpuriousArticleText.sh and the spurious text was manually removed from each article found this way.
 Manually deleting the spurious lines prevented false positive matches from being removed from the articles, since this text could conceivably (however unlikely) appear in-context within the text of an article.
 
 \subsubsection{Discovering Most Commonly Linked Articles}
 \label{sec:ranked-titles}
 
-During analysis, (see section~\ref{subsubsubsec:feature-links}), it was deemed useful to have a list of Wikipedia article titles that are linked to in the training set of Wikipedia articles, ranked most-linked-to first.
+During analysis, (see section~\ref{subsubsubsec:feature-links}), it was deemed useful to create a list of Wikipedia article titles that are linked to in the training set of Wikipedia articles, ranked most-linked-to first.
 It is important to remember that the title of a linked Wikipedia article is not necessarily the same as the title of the linked text that the user may click on to visit the linked article.
 
 An example of this is shown in a piece of HTML excerpted from the Biology article, which displays ``branches and subdisciplines'' to the user, but actually links to the article titled ``List of biology disciplines'':
@@ -182,21 +183,21 @@ An example of this is shown in a piece of HTML excerpted from the Biology articl
    title="List of biology disciplines"
    class="mw-redirect">branches and subdisciplines</a>
 \end{lstlisting}
-\noindent For the purpose of this research, it is the contents of the title attribute that need to be extracted and ranked by most frequently linked.
+\noindent For the purpose of this research, the contents of the title attribute were extracted and ranked by most frequently linked.
 These titles were pulled from the ``a'' link elements in the HTML versions of the Wikipedia pages mentioned in section~\ref{sec:html-pages} by using extractPageLinks.py to generate a rankedTitles.txt file.
 
 \subsection{Test Set}
 \label{subsec:test-set}
 
-Since the goal of this research is to create an index for a book, the test set is generated from a textbook with a comprehensive index section.
-This textbook is called {\it Biology} \cite{biology}, and is freely available from OpenStax \cite{openstax-bio} under the Creative Commons Attribution license.
+Since the goal of this research is to create an index for a book, the test set was generated from a textbook with a comprehensive index section.
+This textbook is called {\it Biology}~\cite{biology}, and is freely available from OpenStax~\cite{openstax-bio} under the Creative Commons Attribution license.
 The book was created by six senior contributors that hold professorial positions at prevalent universities, and approximates an average college textbook.
 This textbook is 1477 pages long, containing an index of 3118 unique topics (labels) making for 4678 different index entries (references).
 
 In {\it Biology}, all words referred to by index entries are bolded in the text itself. Below is an example of what this looks like (bold in original):
 
 \begin{quote}
-Symbiotic relationships, or {\bf symbioses} (plural), are close interactions between individuals of different species over an extended period of time which impact the abundance and distribution of the associating populations. \cite{biology}
+Symbiotic relationships, or {\bf symbioses} (plural), are close interactions between individuals of different species over an extended period of time which impact the abundance and distribution of the associating populations.~\cite{biology}
 \end{quote}
 
 \noindent Here, the bold word ``symbioses'' is referred to by an index entry at the back of the book with the same name. All index entries point to bold words, and all bold words point to index entries. This fact makes it trivial to find which part of the page an index reference is referring to, making it a good candidate for test data.
@@ -204,8 +205,8 @@ Symbiotic relationships, or {\bf symbioses} (plural), are close interactions bet
 \subsubsection{Structuring the Test Data}
 
 Useful though {\it Biology} is as a data source, it is not available in a structured, easily parsable format.
-In order to make the data in {\it Biology} usable, it needs to be converted from its source PDF into a structured form.
-A relational database is used to store the book's text so that it can be queried for its contents, paragraph location, page number, and other helpful attributes.
+In order to make the data in {\it Biology} usable, it was converted from its source PDF into a structured form.
+A relational database was used to store the book's text so that it can be queried for its contents, paragraph location, page number, and other helpful attributes.
 
 \subsubsection{Importing Index Entries into Relational Database}
 
@@ -213,7 +214,7 @@ To expedite the structuring process, text was copied manually from the PDF, and 
 Regular expressions were used to massage the data into a simple, comma separated format.
 In this format, each line represents a unique index entry, with the first column in a line holding the index label (or name), and each subsequent column holds a page number the label can be found on.
 
-A table is created to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
+A table was created to hold the index labels separate from the page numbers, since one label can refer to multiple pages.
 In this table, indexId is an autoincrementing ID, label is the name of the index entry as it appears in the book (e.g., ``Acid rain''), and wikiLabel is the label if the label were a wikipedia article name (e.g., ``Acid\_rain'') which is achieved by replacing spaces in the label with underscores.
 
 \begin{center}
@@ -258,9 +259,9 @@ Only index entries whose {\tt wikiLabel} value matches a Wikipedia article title
 This means that information need only be gathered from index entries that match this criteria.
 To discover this subset of index entries, a database of Wikipedia titles must be intersected with the {\tt index}.
 
-The Wikimedia Foundation periodically creates dumps for their many databases and makes them publicly available online\cite{wiki-dumps}.
-One of the many data sets they make available is a list of Wikipedia article titles in the main \url{/wiki/} namespace for the English language version of Wikipedia\cite{wiki-dump-titles}.
-At the time of this writing, there are 10639771 separate Wikipedia article titles matching this criteria.
+The Wikimedia Foundation periodically creates dumps for their many databases and makes them publicly available online~\cite{wiki-dumps}.
+One of the many data sets they make available is a list of Wikipedia article titles in the main \url{/wiki/} namespace for the English language version of Wikipedia~\cite{wiki-dump-titles}.
+At the time of this writing, there are 10,639,771 separate Wikipedia article titles matching this criteria.
 This dump will serve as the source that will ultimately be intersected with the {\it Biology} index entries to yield the entries that will be used in analyses.
 
 Before performing this intersection, the English Wikipedia title information must be extracted from the dump file and placed in a table in the relational database.
@@ -278,8 +279,8 @@ title \\
 \end{tabular} 
 \end{center}
 
-This data was imported into the {\tt articleTitles} table using the {\tt titleImporter.php} script.
-Now that both the index labels and article titles exist in the relational database, the two datasets can be intersected by running the following MySQL command, where {\tt BINARY} requires case sensitive matching:
+This data was imported into the {\tt articleTitles} table using the titleImporter.php script.
+With both the index labels and article titles in the relational database, the two data sets were intersected by running the following MySQL command ({\tt BINARY} requires case sensitive matching):
 
 \begin{lstlisting}[language=SQL]
 SELECT i.wikiLabel
@@ -287,8 +288,9 @@ SELECT i.wikiLabel
     WHERE BINARY i.wikiLabel = at.title;
 \end{lstlisting}
 
-The 3118 unique index labels intersected against all 10639771 Wikipedia articles yields a total number of 518 overlapping terms.
-This number would be larger, however all Wikipedia titles begin with a capital letter, and since this was a {\tt BINARY} exact case match all index labels with lowercase initial letters were excluded from the intersection.
+The 3118 unique index labels intersected against all 10,639,771 Wikipedia articles yields a total number of 518 overlapping terms.
+This number was so low because all Wikipedia titles begin with a capital letter, but not all index labels did, even if the word was not a proper noun or acronym.
+Since this selection was restricted to exact case matches only, all index labels with lowercase initial letters were excluded from the intersection.
 This does not seem to introduce a bias towards proper nouns, however, as {\it Biology}'s index contains words and phrases exactly as they appear in the text.
 Below is a random sampling of 15 labels from the intersection as they appear in {\it Biology}'s index.
 Notice how very few of these labels are proper nouns.
@@ -352,14 +354,14 @@ paraNum \\
 The contents of a paragraph are stored in the {\tt paragraph} table's body, along with information about the paragraph's location.
 {\tt pageNum} and {\tt endPageNum} specify the pages on which the paragraph starts and ends, since a paragraph may continue onto another page.
 
-To associate these paragraphs with the index labels in the {\tt index} table, the {\tt indexedParagraph} table was created.
-This lookup table specifies a many to many relationship between {\tt paragraph} and {\tt index}, since an index entry refers to at least one paragraph, and a paragraph may contain zero or more index references. Once these tables are created, it's time extract the text from {\it Biology} that will be used in the test set.
+To associate these paragraphs with the index labels in the {\tt index} table, the indexedParagraph table was created.
+This lookup table specifies a many to many relationship between {\tt paragraph} and {\tt index}, since an index entry refers to at least one paragraph, and a paragraph may contain zero or more index references. Once these tables were created, the text from {\it Biology} could be extracted from the source PDF and imported into the database.
 
 \subsubsection{Collecting the Indexed Text}
 
 The paragraphs were imported into the relational database using paragraphImporter.php, a small webpage script written specifically for this purpose, allowing a researcher to copy a paragraph into a textbox on that page and fill in the meta data for that paragraph and keep track of the index entries that point to it.
 
-As mentioned above, {\it Biology} comes in PDF form, making it difficult for a computer to parse the individual paragraphs out.
+As mentioned above, {\it Biology} comes in PDF form, making it difficult for a computer to parse out the individual paragraphs.
 By using the SQL query below, a list of index entries with the pages on which they appear is extracted from the database.
 
 \begin{lstlisting}[language=SQL]
@@ -396,10 +398,10 @@ Finding which paragraph on a page corresponds to a given index label is a trivia
 \subsubsection{Relational Database to Files}
 \label{subsubsec:RDB2F}
 
-This research uses Python's Natural Language Toolkit (NLTK) library for analysis \cite{nltk}.
+This research uses Python's Natural Language Toolkit (NLTK) library for analysis~\cite{nltk}.
 With NLTK, it is easier to work with raw files without interacting with a database.
 In order to do this, the content that was inserted into the database in the above step needs to be extracted.
-The extraction is acomplished using saveIndexParagraphs.php, a script which connects to the database and places paragraphs in files named by their respective index labels.
+The extraction is accomplished using saveIndexParagraphs.php, a script which connects to the database and places paragraphs in files named by their respective index labels.
 All of the paragraphs a label refers to are appended to the same file, using two newline characters ({\tt{\textbackslash}n{\textbackslash}n}) as a delimiter between paragraphs.
 It is also important to note that a paragraph will be placed in multiple files if multiple labels refer to it.
 Now the test set is considered processed, it is time to move on to the training set.
@@ -407,7 +409,7 @@ Now the test set is considered processed, it is time to move on to the training 
 \subsection{Mapping the Training Set to the Test Set}
 \label{sec:indexToWiki}
 
-Before discovering that some of the Wikipedia articles were actually empty redirect pages in section~\ref{subsec:finding-redirects}, there was thought to be a direct mapping between {\it Biology} index labels and Wikipedia articles.
+Before discovering that some of the Wikipedia articles were actually empty redirect pages as discussed in section~\ref{subsec:finding-redirects}, there was thought to be a direct mapping between {\it Biology} index labels and Wikipedia articles.
 Afterwards, it was established that the link between an index label and its article may be transitive through redirect pages.
 The section maintained a mapping from index label from Wikipedia article in the indexToWiki table by resolving page redirects.
 Although this information is stored in the relational database, it is easier to make use of the data if it exists in an easily portable file, rather than a more difficult to move database.
@@ -418,4 +420,4 @@ SELECT indexTitle, wikiTitle FROM thesis.indexToWiki;
 \end{lstlisting}
 \noindent Since the size of the resulting indexToWiki.json was reasonably small, the file was converted to JSON by hand using vim and regular expressions.
 
-Now that all of the data have been collected, parsed, and organized, the analysis of the data and attempt at automatically regenerating {\it Biology}'s index may begin.
+Once of the data were collected, parsed, and organized, the analysis of the data and attempt at automatically regenerating {\it Biology}'s index could begin.
