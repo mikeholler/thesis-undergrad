@@ -1,5 +1,6 @@
 \documentclass[12pt,letterpaper]{article}
 %\usepackage[margin=1.5in]{geometry} % Set page margin
+%\usepackage{setspace} % Allows \doublespacing command to be used
 \usepackage{etex}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
@@ -25,21 +26,31 @@
 \usepackage{pgfplotstable}
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows}
-\usepackage{draftwatermark}
+%\usepackage{draftwatermark}
+%\SetWatermarkColor[rgb]{1,0.85,0.85}
 \usepackage{tabularx,ragged2e,booktabs,caption}
 \usepackage{xspace}
+
 \newcolumntype{C}[1]{>{\Centering}m{#1}}
 \renewcommand\tabularxcolumn[1]{C{#1}}
-\SetWatermarkColor[rgb]{1,0.85,0.85}
 \interfootnotelinepenalty=10000 % Don't split footnotes accross pages.
 %-------------------------------------------------
 % From http://tex.stackexchange.com/a/60212/31317
 \usepackage{titlesec}
-\usepackage[pdfpagelayout=TwoPageRight]{hyperref}
+\usepackage[pdfpagelayout=TwoPageRight,ocgcolorlinks]{hyperref}
 \usepackage{fontspec}
 
 \setmainfont[Ligatures=TeX]{Times New Roman}
 \setmonofont[Scale=MatchLowercase]{DejaVu Sans Mono}
+
+%\usepackage[ocgcolorlinks]{hyperref}
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor=[HTML]{AD0000},
+    citecolor=[HTML]{0000AD},
+    urlcolor=[HTML]{000000}
+}
 
 % Signature and date command.
 %\newcommand*{\SignatureAndDate}[1]{%
@@ -140,11 +151,10 @@ Approved: & $\underset{\text{Thesis Director Signature}}{\line(1,0){150}}$ & Dat
 \textbf{\Large Acknowledgements}
 \end{center}
 
-Placeholder. This will be a surprise :)
-%I would like to express my deep gratitude to Dr. Caroline St. Clair, my thesis director, for her constant encouragement and invaluable feedback throughout this research.
-%I would also like to thank Dr. Michael De Brauw for his feedback as my second reader, and John Small for his help verifying my references.
+I would like to express my deep gratitude to Dr. Caroline St. Clair, my thesis director, for her constant encouragement and invaluable feedback throughout this research.
+I would also like to thank Dr. Michael De Brauw for his feedback as my second reader, and John Small for his help verifying my references.
 
-%Finally, I would like to thank my parents and girlfriend for their extensive support, encouragement, and understanding over the past year.
+Finally, I would like to thank my parents and girlfriend for their extensive support, encouragement, and understanding over the past year.
 
 \newpage
 \thispagestyle{empty}

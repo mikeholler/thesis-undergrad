@@ -1,6 +1,12 @@
-\pagebreak
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{section}{References}
 \begin{thebibliography}{99}
-
+% We *really* want to break URLs across lines here. Since URL coloring is
+% pure black, the printer won't print these links in ``color''. It's also
+% important that this line is within the ``thebibliography`` environment,
+% because we only want this behavior in the bibliography.
+\hypersetup{ocgcolorlinks=false}
 \bibitem{amazon-products}
 Amazon. 2014. Product Advertising API. [Online]. Available from: \url{https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html}. Accessed 2014 Apr 24.
 

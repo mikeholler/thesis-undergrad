@@ -1,8 +1,4 @@
 \section{Background}
-% Background section placeholder (move everything below this to another file eventually).
-The process of creating an index is either costly or time consuming for authors, depending on whether they choose to create the index themselves or pay someone to do it.
-The act of creating an index is labor and organization intensive, often requiring a text to be read multiple times while keeping track of entries electronically or on index cards.
-
 Since indexing a book is so expensive and time consuming, it makes sense to see if computers can be used to generate an index that is nearly as accurate as human indexing professionals.
 To automate the indexing process, software exists to replace the indexer's index cards with a more efficient computerized organization system.
 However, there is a new, rising interest in seeing if computers can generate indexes deterministically, without the help of human beings.
@@ -10,7 +6,7 @@ To do this, software engineers and researchers must apply natural language proce
 
 \subsection{Accuracy of Human and Automatic Indexes}
 
-When attempting to automate the indexing process, it is important to understand what standards the software will be judged by.
+When attempting to automate the indexing process, it is important to understand the standards by which the software will be evaluated.
 In {\it Natural-Language Processing and Automatic Indexing}, an article published in {\it The Indexer} by C. Korycinski and Alan F. Newell, the authors cite relevant metrics for automatic indexing excerpted from Cleverdon's work:
 
 \begin{quote}
@@ -23,8 +19,8 @@ In {\it Natural-Language Processing and Automatic Indexing}, an article publishe
 \end{quote}
 
 Of course, 2 is most relevant to this research, but the other three reveal how imprecisely human beings perform tasks that replicate another human's work.
-In the statistics given above, indexing is the least precise of all of the human classification tasks mentioned above.
-This makes the gold accuracy standard for an automatic indexer 30\%.
+In the statistics given above, indexing is the least precise of all of the human classification tasks mentioned.
+This sets the standard for the accuracy of an automatic indexer at 30\%.
 That is, a computer index compared to a human index should display at least the same proportion of similarity as a human generated index compared to another human generated index.
 Now that a metric for index quality has been established, the next section discusses methods and strategies that can be used to create an automatic indexer that might be able to match this benchmark.
 
@@ -46,13 +42,14 @@ Given a list of names, a computer can be taught to determine (with reasonably hi
 English readers use certain heuristics (shortcuts) to aid in determining the gender of a name, and computers can do the same.
 For example, an average person might know that names ending in {\it -a} are typically feminine, while names ending in {\it -o} are typically masculine, so he or she understands that the last letter is a strong determinant of a name's gender, or {\it label}.
 In NLP, these determinants are known as {\it features}.
-With enough data about names and their genders (a {\it training set}), the probability of a letter determining a particular gender can be calculated, and a person could be {\it trained} using this data and the "last letter" feature to guess name genders with reasonable accuracy.
+With enough data about names and their genders (a {\it training set}), the probability of a letter determining a particular gender can be calculated, and a person could be {\it trained} using this data and the ``last letter'' feature to guess name genders with reasonable accuracy.
 Of course, the last letter is not the only feature of a name that determines its gender, and by training with additional relevant features the classifier's guesses might be made more accurate.
 Indeed, this process of determining the category (or {\it class}) of an item is called {\it classification}.
 The above is an example a {\it supervised} machine learning, since training data is involved.
 Unsupervised machine learning algorithms are outside the scope of this research, and will not be mentioned further in this paper.
 
 \subsubsection{Document Classification}
+\label{sec:doc-class}
 % Document classification and automatic indexing
 Document classification is a type of NLP that uses machine learning methods like those above, and is used in this research to create a computer generated index.
 Document classification involves taking a piece of text (known as a {\it document}) as input and producing a label or {\it class} as output~\cite{jurafsky}.

@@ -186,7 +186,7 @@ The code for classifier.py is shown in appendix~\ref{appendix:b}.
 
 \subsubsection{Running the Classifier}
 
-The classifier was run on twelve commodity HP computers with 64-bit Windows 7, Intel i7 processors, and 4 gigabytes of memory installed.
+The classifier was run on twelve commodity HP computers with 64-bit Windows~7, Intel~i7 processors, and 4~gigabytes of memory installed.
 A zip file containing classifier.py, plain text Wikipedia data, plain text {\it Biology} data, indexToWiki.json, and rankedTitles.txt was copied twice\footnote{The processor would have allowed up to four instances of the classifier to run simultaneously (one on each core), but the classifier's large memory requirements meant that only two instances of the classifier program could run comfortably on each computer.} onto each of the computers.
 Each copy of the classifier was then configured to use a unique combination of feature characteristics defining the contents of the feature set.
 Finally, both copies of classify.py were ran simultaneously on each computer, taking advantage of the processors' multiple cores.
