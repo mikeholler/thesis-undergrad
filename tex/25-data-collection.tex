@@ -8,7 +8,7 @@ Generally, training and test data come from the same corpus, the same set of dat
 This research takes test and training set data from two different, mutually exclusive corpora.
 The reason for this deviation for convention is to answer the question of whether Wikipedia data can be used to train for any more specific set of input data, like paragraphs from a Biology textbook.
 The training set is composed of paragraphs from Wikipedia articles, with each paragraph labeled by the title of the article it belongs to.
-The test data contain paragraphs from the OpenStax {\it Biology} textbook~\cite{biology}, with each paragraph labeled by the index entry that refers to it\footnote{If a {\it Biology} paragraph is not referenced in the index, it is not included in the data set. If it is referenced by multiple index entries, the paragraph is included once per index entry.}
+The test data contain paragraphs from the OpenStax {\it Biology} textbook~\cite{biology}, with each paragraph labeled by the index entry that refers to it.\footnote{If a {\it Biology} paragraph is not referenced in the index, it is not included in the data set. If it is referenced by multiple index entries, the paragraph is included once per index entry.}
 
 Due to the sheer size of Wikipedia and the memory and computational power available for this research, the data set was reduced by selecting only paragraphs from Wikipedia articles whose title matched an index entry in {\it Biology}.
 Likewise, this research makes an assumption that the set of all reasonable index entries for any textbook is the same as the set of all titles in the English Wikipedia.
@@ -79,7 +79,7 @@ By installing MediaWiki on a personal computer and importing the database export
 
 \subsubsection{Converting MediaWiki Markup to HTML}
 
-To convert the exported articles to HTML, a local MediaWiki server was installed on a personal computer using MediaWiki's online instructions~\cite{mediawiki-installation} with the purpose of creating a local version of Wikipedia that only contains the articles that share titles with index labels from {\bf Biology}.
+To convert the exported articles to HTML, a local MediaWiki server was installed on a personal computer using MediaWiki's online instructions~\cite{mediawiki-installation} with the purpose of creating a local version of Wikipedia that only contains the articles that share titles with index labels from {\it Biology}.
 This mini-Wikipedia can then be crawled using printPageLinks.py to extract and store the HTML versions of the articles.
 
 After installation, all available first-party MediaWiki plugins were enabled in the installation, as Wikipedia uses many of them on their own MediaWiki installation.
@@ -192,7 +192,7 @@ These titles were pulled from the ``a'' link elements in the HTML versions of th
 Since the goal of this research is to create an index for a book, the test set was generated from a textbook with a comprehensive index section.
 This textbook is called {\it Biology}~\cite{biology}, and is freely available from OpenStax~\cite{openstax-bio} under the Creative Commons Attribution license.
 The book was created by six senior contributors that hold professorial positions at prestigious universities, and approximates an average college textbook.
-This textbook is 1477 pages long, containing an index of 3118 unique topics (labels) making for 4678 different index entries (references).
+This textbook is 1,477 pages long, containing an index of 3,118 unique topics (labels) making for 4,678 different index entries (references).
 
 In {\it Biology}, all words referred to by index entries are bolded in the text itself. Below is an example of what this looks like (bold in original):
 
@@ -288,7 +288,7 @@ SELECT i.wikiLabel
     WHERE BINARY i.wikiLabel = at.title;
 \end{lstlisting}
 
-The 3118 unique index labels intersected against all 10,639,771 Wikipedia articles yields a total number of 518 overlapping terms.
+The 3,118 unique index labels intersected against all 10,639,771 Wikipedia articles yields a total number of 518 overlapping terms.
 This number was so low because all Wikipedia titles begin with a capital letter, but not all index labels did, even if the word was not a proper noun or acronym.
 Since this selection was restricted to exact case matches only, all index labels with lowercase initial letters were excluded from the intersection.
 This does not seem to introduce a bias towards proper nouns, however, as {\it Biology}'s index contains words and phrases exactly as they appear in the text.

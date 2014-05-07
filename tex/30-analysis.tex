@@ -38,7 +38,7 @@ If the training set had 1,000 unique words, it would have 1,000 different ``cont
 \underline{All} \underline{animals} \underline{are} {\bf \underline{heterotrophic} \underline{beings}}\textsuperscript{Heterotroph}, \underline{meaning} \underline{that} \underline{they} \underline{feed} \underline{directly} \underline{or} \underline{indirectly} \underline{on} \underline{other} \underline{living} \underline{things}. \underline{They} \underline{are} \underline{often} \underline{further} \underline{subdivided} \underline{into} \underline{groups} \underline{such} \underline{as} \underline{\bf carnivores}\textsuperscript{Carnivore}, \underline{\bf herbivores}\textsuperscript{Herbivore}, \underline{\bf omnivores}\textsuperscript{Omnivore}, \underline{and} \underline{\bf parasites}\textsuperscript{Parasitic animals}.
 \end{quote}
 
-Many of the underlined words above, like ``things'', ``other'', ``subdivided'', {\it et al.} are not indicative of the word Enzyme.
+Many of the underlined words above, like ``things'', ``other'', ``subdivided'', {\it et al.} are not indicative of the word ``Animal''.
 One of the drawbacks of the contains feature is how many unhelpful---but nevertheless underlined---words make it into the feature set, since literally every word in the training set is its own feature.
 Since features are supposed to communicate information about a text (in this case, features are used to indicate an article's subject), the presence of so many features that do not help indicate the paragraph's subject suggests the {\it contains} primary feature characteristic does not describe an optimal feature set.
 Therefore, it makes sense to try some more restrictive feature sets in addition to testing the contains feature.
@@ -171,7 +171,7 @@ Least frequent \\
 Random \\
 \end{tabular}
 \end{minipage}
-\caption{Comprehensive list of feature characters being used.\label{tab:feature-characteristics}}
+\caption{Comprehensive list of feature characteristics being used.\label{tab:feature-characteristics}}
 \end{table}
 \end{center}
 
@@ -195,23 +195,23 @@ When each process completed execution, the terminated process's feature characte
 \subsection{Experimental Results and Discussion}
 
 The experiment's 24 trials and their results are summarized in tables \ref{tab:results-grouped} and \ref{tab:results-sorted} below.
-Table~\ref{tab:results-grouped} presents the experiment's results grouped by feature characteristic, making it possible to easily locate and compare the effectiveness between features with many similar feature characteristics.
-Table~\ref{tab:results-grouped}, table~\ref{tab:results-sorted} organizes the experimental results by accuracy, with the most accurate features on top.
+The former presents the experiment's results grouped by feature characteristic, making it possible to easily locate and compare the effectiveness between features with many similar feature characteristics.
+The latter organizes the experimental results by accuracy, with the most accurate features on top.
 
 Table~\ref{tab:results-grouped} shows, that generally, case-insensitive matches are more accurate than case-sensitive matches (by about double).
 The best case-sensitive feature combines the {\it most frequent} and {\it in first sentence} feature characteristics, while the best case-insensitive feature (and best overall feature) combines {\it linked article titles} and {\it most frequent}.
 The table also shows that the {\it contains} feature yields the worst results of all primary features, with a peak of 0.40\% accuracy when it is used in combination with the {\it random} and {\it case-insensitive} feature characteristics.
 This is to be expected, since the other three primary features use heuristics to select only individual features that are more likely to have relevance to the entire paragraph than a random word in the text.
 
-Table~\ref{tab:results-grouped} shows the general success of the various features relative to the next most and next least accurate feature.
+Table~\ref{tab:results-sorted} shows the general success of the various features relative to the next most and next least accurate feature.
 From this table, it is clear that the best feature is significantly more accurate than any other feature with an accuracy of 9.49\%.
 The next best method is {\it case-insensitive, in first sentence, most frequent} at 3.03\%.
 After the top two, the two case-sensitive versions of these features follow at 1.21\% and 1.82\% respectively.
 
-Visibly, table~\ref{tab:results-sorted} also reveals a trend in sampling technique that is worthy of discussion.
+Visibly, Table~\ref{tab:results-sorted} also reveals a trend in sampling technique that is worthy of discussion.
 The table lists most frequent as almost unanimously the most effective sampling technique, with all but two of the features using the {\it most frequent} feature characteristic at the top of the table.
 The other two features using {\it most frequent} are at the bottom of the table, but these features both use the relatively unreliable {\it contains} primary feature.
-{\it Most frequent} was probably the worst of the feature using {\it contains} because stop words\footnote{Stop words are words that, while important for grammar, are largely irrelevant to the document. These are words like ``the'', ``and'', and ``have''.} were not removed for this research, meaning the {\it most-frequent contains} feature likely included a large number of stop words within the 2000 feature used.
+{\it Most frequent} was probably the worst of the feature using {\it contains} because stop words\footnote{Stop words are words that, while important for grammar, are largely irrelevant to the document. These are words like ``the'', ``and'', and ``have''.} were not removed for this research, meaning the {\it most-frequent contains} feature likely included a large number of stop words within the 2,000 feature used.
 
 Like {\it contains}, {\it first word in sentence} appears largely ineffective with a peak accuracy of 0.61\% in case-sensitive and case-insensitive {\it most frequent}.
 Given the example provided in section~\ref{sec:first-word}, this is not entirely surprising.
@@ -221,7 +221,7 @@ This is a consequence of using training and test sets from different sources---t
 \pagebreak
 \begin{center}
 \begin{table}[h]
-\caption{Indexing results using 2000 features.}
+\caption{Indexing results using 2,000 features.}
 \begin{tabular}{cllll}
 \multicolumn{1}{l}{\textbf{\begin{tabular}[c]{@{}c@{}}\label{tab:results-grouped}Sensitivity\end{tabular}}} & \textbf{Primary Feature} & \textbf{Sampling Technique} & \textbf{Accuracy} \\ \hline
 \multirow{12}{*}{Case-sensitive}   & \multirow{3}{*}{Contains}               & Least frequent              & 0.20\%    \\ \cline{3-4} 
@@ -255,7 +255,7 @@ This is a consequence of using training and test sets from different sources---t
 \pagebreak
 \begin{center}
 \begin{table}[h]
-\caption{Indexing results using 2000 features, sorted by accuracy, descending.}
+\caption{Indexing results using 2,000 features, sorted by accuracy, descending.}
 \begin{tabular}{llll}
 \label{tab:results-sorted}
 \textbf{Sensitivity} & \textbf{Primary Feature}       & \textbf{Sampling Technique} & \textbf{Accuracy $\downarrow$} \\ \hline

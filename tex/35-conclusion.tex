@@ -6,9 +6,9 @@ The automatic indexer is measured in terms of accuracy, which is defined as the 
 The gold standard for indexing accuracy is 30\%, defined from Korycinski and Newell~\cite{automatic-indexing}.
 Although this research was unable to reach human levels of indexing accuracy, it did achieve a 9.49\% accuracy from one of the twenty-four tested feature sets.
 
-The most accurate feature set was created using the 2000 most frequently linked articles' titles from the Wikipedia training data.
+The most accurate feature set was created using the 2,000 most frequently linked articles' titles from the Wikipedia training data.
 Since this study focused on testing a breadth of different feature sets, the nuances of the more successful feature sets were left unexplored.
-More research on optimizing this feature set should be done, perhaps by eliminating stop words, using a different type of supervised classification, or changing the sample size of the feature set (which was locked at 2000 for each of the twenty-four trials).
+More research on optimizing this feature set should be done, perhaps by eliminating stop words, using a different type of supervised classification, or changing the sample size of the feature set (which was locked at 2,000 for each of the twenty-four trials).
 
 In addition to the sub-optimal accuracy, there are a few overall flaws with using a \naive Bayes classifier---or any document classifier---for automatic indexing.
 Document classifiers like the one used for this research are required to label each document once and only once.
